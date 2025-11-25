@@ -27,9 +27,6 @@ export function Header() {
           <Link href="/about" className="text-base font-medium text-[#1e293b] transition-colors hover:text-drop-500">
             About Us
           </Link>
-          <Link href="/contact" className="text-base font-medium text-[#1e293b] transition-colors hover:text-drop-500">
-            Contact
-          </Link>
         </div>
 
         {/* Desktop Auth Buttons */}
@@ -73,13 +70,6 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               About Us
-            </Link>
-            <Link
-              href="/contact"
-              className="block py-2 text-base font-medium text-[#1e293b] transition-colors hover:text-drop-500"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
             </Link>
             <div className="pt-4 space-y-2">
               <Button variant="ghost" size="sm" className="w-full">Sign In</Button>

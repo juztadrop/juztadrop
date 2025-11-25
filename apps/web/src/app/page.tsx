@@ -18,7 +18,7 @@ export default function Home() {
             <div className="space-y-8 relative z-10">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-tight">
-                  <span className="text-[#1e293b]">Small actions,</span>
+                  <span className="text-[#1e293b]">Small actions</span>
                   <br />
                   <span className="text-drop-500 bg-gradient-to-r from-drop-500 to-drop-600 bg-clip-text text-transparent">Lasting impact</span>
                 </h1>
