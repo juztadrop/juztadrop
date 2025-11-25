@@ -5,7 +5,8 @@ A platform connecting volunteers with organizations that need help.
 ## Stack
 
 - Runtime: Bun (all-in-one JavaScript runtime)
-- Frontend: Next.js 14 (App Router)
+- Frontend: Next.js 14 (App Router) + React 18
+- UI: shadcn/ui + Tailwind CSS
 - Backend: Elysia
 - Database: PostgreSQL + Drizzle ORM
 - Monorepo: Bun workspaces
@@ -121,6 +122,13 @@ FROM_EMAIL=noreply@yourdomain.com
 ```
 
 Note: Email sending will be skipped in development if RESEND_API_KEY is not configured.
+
+**Customization:**
+
+Design tokens are configured in:
+
+- [apps/web/src/app/globals.css](apps/web/src/app/globals.css) - CSS variables for colors and theme
+- [apps/web/tailwind.config.ts](apps/web/tailwind.config.ts) - Tailwind configuration
 
 ## Build
 
