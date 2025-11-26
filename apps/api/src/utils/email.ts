@@ -1,9 +1,24 @@
-import { Resend } from 'resend';
+const nodemailer = require('nodemailer');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+// SMTP Configuration from environment variables
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
+const SMTP_SECURE = process.env.SMTP_SECURE === 'true'; // true for 465, false for other ports
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@justadrop.xyz';
+const FROM_NAME = process.env.FROM_NAME || 'Just a Drop';
 
-const resend = new Resend(RESEND_API_KEY);
+// Create transporter
+const transporter = nodemailer.createTransport({
+  host: SMTP_HOST,
+  port: SMTP_PORT,
+  secure: SMTP_SECURE,
+  auth: {
+    user: SMTP_USER,
+    pass: SMTP_PASS,
+  },
+});
 
 interface EmailOptions {
   to: string;
@@ -12,28 +27,35 @@ interface EmailOptions {
 }
 
 export const sendEmail = async ({ to, subject, html }: EmailOptions) => {
-  if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured. Email not sent.');
+  console.log('[sendEmail] Called with:');
+  console.log('   To:', to);
+  console.log('   Subject:', subject);
+  console.log('   SMTP configured:', !!SMTP_USER && !!SMTP_PASS);
+  console.log('   FROM_EMAIL:', FROM_EMAIL);
+
+  if (!SMTP_USER || !SMTP_PASS) {
+    console.warn('[sendEmail] SMTP credentials not configured. Email not sent.');
     return { success: false, message: 'Email service not configured' };
   }
 
   try {
-    const data = await resend.emails.send({
-      from: FROM_EMAIL,
+    console.log('[sendEmail] Sending email via SMTP...');
+    const info = await transporter.sendMail({
+      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
       to,
       subject,
       html,
     });
 
-    return { success: true, data };
+    console.log('[sendEmail] Email sent successfully:', info.messageId);
+    return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('[sendEmail] Error sending email:', error);
     return { success: false, error };
   }
 };
 
 // Email Templates
-
 export const sendWelcomeVolunteerEmail = async (email: string, name: string) => {
   return sendEmail({
     to: email,
@@ -134,6 +156,62 @@ export const sendApplicationStatusEmail = async (
       <p>Hi ${volunteerName},</p>
       <p>Your application for <strong>${opportunityTitle}</strong> has been reviewed.</p>
       <p>${message}</p>
+    `,
+  });
+};
+
+export const sendEmailVerification = async (
+  email: string,
+  name: string,
+  verificationToken: string
+) => {
+  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+
+  console.log('[sendEmailVerification] Preparing verification email');
+  console.log('   Email:', email);
+  console.log('   Name:', name);
+  console.log('   Verification URL:', verificationUrl);
+
+  return sendEmail({
+    to: email,
+    subject: 'Verify Your Email - Just a Drop',
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; background: #0ea5e9; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 20px; color: #64748b; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome to Just a Drop!</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${name},</h2>
+              <p>Thank you for registering as a volunteer with Just a Drop!</p>
+              <p>To complete your registration, please verify your email address by clicking the button below:</p>
+              <div style="text-align: center;">
+                <a href="${verificationUrl}" class="button">Verify Email Address</a>
+              </div>
+              <p>Or copy and paste this link into your browser:</p>
+              <p style="word-break: break-all; color: #0ea5e9;">${verificationUrl}</p>
+              <p><strong>This link will expire in 24 hours.</strong></p>
+              <p>Once verified, you can start browsing and applying for volunteer opportunities in your area.</p>
+              <p>If you didn't create an account with Just a Drop, please ignore this email.</p>
+            </div>
+            <div class="footer">
+              <p>Just a Drop - Making a difference, one drop at a time</p>
+            </div>
+          </div>
+        </body>
+      </html>
     `,
   });
 };
