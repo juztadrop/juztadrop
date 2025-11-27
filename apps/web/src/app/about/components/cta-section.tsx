@@ -3,8 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Heart, Building2, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/auth-context'
 
 export function CTASection() {
+  const { user } = useAuth()
+
   return (
     <section className="py-20 md:py-32 bg-gradient-to-br from-drop-500 via-drop-600 to-drop-700 relative overflow-hidden">
       {/* Background pattern */}
@@ -28,32 +31,34 @@ export function CTASection() {
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
-            <Button 
-              size="lg" 
-              className="bg-white text-drop-600 hover:bg-slate-50 text-lg font-bold px-10 py-7 h-auto shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group"
-              asChild
-            >
-              <Link href="/volunteer/register">
-                <Heart className="h-6 w-6 mr-3 group-hover:fill-drop-600 transition-all" />
-                Become a Volunteer
-                <ArrowRight className="h-5 w-5 ml-3 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+          {/* CTA Buttons - Only show if user is not logged in */}
+          {!user && (
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+              <Button 
+                size="lg" 
+                className="bg-white text-drop-600 hover:bg-slate-50 text-lg font-bold px-10 py-7 h-auto shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group"
+                asChild
+              >
+                <Link href="/volunteer/register">
+                  <Heart className="h-6 w-6 mr-3 group-hover:fill-drop-600 transition-all" />
+                  Become a Volunteer
+                  <ArrowRight className="h-5 w-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
 
-            <Button 
-             size="lg" 
-              className="bg-white text-drop-600 hover:bg-slate-50 text-lg font-bold px-10 py-7 h-auto shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group"
-              asChild
-            >
-              <Link href="/organization/register">
-                <Building2 className="h-6 w-6 mr-3 group-hover:fill-drop-600 transition-all" />
-                Register Your Organization
-                <ArrowRight className="h-5 w-5 ml-3 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-          </div>
+              <Button 
+                size="lg" 
+                className="bg-white text-drop-600 hover:bg-slate-50 text-lg font-bold px-10 py-7 h-auto shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group"
+                asChild
+              >
+                <Link href="/organization/register">
+                  <Building2 className="h-6 w-6 mr-3 group-hover:fill-drop-600 transition-all" />
+                  Register Your Organization
+                  <ArrowRight className="h-5 w-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
+          )}
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-16 border-t border-white/20">
