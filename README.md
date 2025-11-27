@@ -1,12 +1,12 @@
 # Just a Drop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.md)
 [![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-blue.svg)](CODE_OF_CONDUCT.md)
 
 A platform connecting volunteers with organizations that need help.
 
-> **Open Source**: This project is open source and welcomes contributions from the community. See our [Contributing Guide](CONTRIBUTING.md) to get started.
+> **Open Source**: This project is open source and welcomes contributions from the community. See our [Contributing Guide](docs/CONTRIBUTING.md) to get started.
 
 ## Stack
 
@@ -214,7 +214,7 @@ We welcome contributions from the community! Just a Drop is an open source proje
 
 ### How to Contribute
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines.
 
 ## Community
 
@@ -225,10 +225,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
 ## Documentation
 
-- **[Architecture](ARCHITECTURE.md)**: Technical architecture and design decisions
+- **[Architecture](docs/ARCHITECTURE.md)**: Technical architecture and design decisions
 - **[Security Policy](SECURITY.md)**: Security best practices and vulnerability reporting
 - **[Changelog](CHANGELOG.md)**: Track changes across versions
-- **[Contributing](CONTRIBUTING.md)**: How to contribute to the project
+- **[Contributing](docs/CONTRIBUTING.md)**: How to contribute to the project
 
 ## License
 

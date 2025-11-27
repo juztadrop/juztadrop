@@ -52,4 +52,4 @@ packages/
 - **Development**: Local Bun dev servers + Docker PostgreSQL
 - **Production**: Docker Compose + Caddy (auto HTTPS)
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for details.
+See [DEPLOYMENT.md](../DEPLOYMENT.md) for details.
