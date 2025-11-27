@@ -57,19 +57,9 @@ export default function CreateOpportunityForm() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !user) {
-      console.log('[Create Page] User not logged in, redirecting to login');
       router.push('/login');
     }
   }, [user, isLoading, router]);
-
-  // Debug: Check token
-  useEffect(() => {
-    console.log('[Create Page] Auth state:', { 
-      user: !!user, 
-      token: token ? `${token.substring(0, 20)}...` : 'null',
-      isLoading 
-    });
-  }, [user, token, isLoading]);
 
   // Show loading while checking auth
   if (isLoading) {

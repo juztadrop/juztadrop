@@ -18,7 +18,6 @@ const getAuthToken = () => {
   if (!token) {
     token = sessionStorage.getItem('authToken');
   }
-  console.log('[API Client] Retrieved token:', token ? `${token.substring(0, 20)}...` : 'null');
   return token;
 };
 
@@ -35,9 +34,6 @@ async function apiRequest<T>(
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
-    console.log('[API Client] Adding Authorization header to request:', endpoint);
-  } else {
-    console.warn('[API Client] No token found for request:', endpoint);
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
