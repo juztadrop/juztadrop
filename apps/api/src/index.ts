@@ -8,9 +8,15 @@ import { organizationsRouter } from './routes/organizations';
 import { opportunitiesRouter } from './routes/opportunities';
 import { applicationsRouter } from './routes/applications';
 import { participationsRouter } from './routes/participations';
+import { errorHandler } from './middleware/error-handler';
+import { requestLogger } from './middleware/request-logger';
+import { log } from './utils/logger';
 
 const app = new Elysia()
+  // Global middleware
   .use(cors())
+  .use(errorHandler)
+  .use(requestLogger)
   .use(
     swagger({
       documentation: {
@@ -20,8 +26,8 @@ const app = new Elysia()
           description: 'API for connecting volunteers with organizations',
         },
         tags: [
-          { name: 'auth', description: 'Authentication endpoints' },
-          { name: 'admin', description: 'Admin endpoints' },
+          { name: 'auth', description: 'Authentication endpoints (public)' },
+          { name: 'admin', description: 'Admin endpoints (protected)' },
           { name: 'volunteers', description: 'Volunteer endpoints' },
           { name: 'organizations', description: 'Organization endpoints' },
           { name: 'opportunities', description: 'Opportunity endpoints' },
@@ -31,9 +37,14 @@ const app = new Elysia()
       },
     })
   )
+  // Health check endpoints (public)
   .get('/', () => ({ message: 'Just a Drop API' }))
-  .get('/health', () => ({ status: 'ok' }))
+  .get('/health', () => ({ status: 'ok', timestamp: new Date().toISOString() }))
+  
+  // Public routes (no authentication required)
   .use(authRouter)
+  
+  // Protected routes (authentication required)
   .use(adminRouter)
   .use(volunteersRouter)
   .use(organizationsRouter)
@@ -42,5 +53,10 @@ const app = new Elysia()
   .use(participationsRouter)
   .listen(3001);
 
-console.log(`API running at http://${app.server?.hostname}:${app.server?.port}`);
-console.log(`OpenAPI docs at http://${app.server?.hostname}:${app.server?.port}/swagger`);
+log.info('API server starting', {
+  hostname: app.server?.hostname,
+  port: app.server?.port,
+});
+
+log.info(`API running at http://${app.server?.hostname}:${app.server?.port}`);
+log.info(`OpenAPI docs at http://${app.server?.hostname}:${app.server?.port}/swagger`);

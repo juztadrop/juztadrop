@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { log } from './logger';
 
 // SMTP Configuration from environment variables
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -27,19 +28,14 @@ interface EmailOptions {
 }
 
 export const sendEmail = async ({ to, subject, html }: EmailOptions) => {
-  console.log('[sendEmail] Called with:');
-  console.log('   To:', to);
-  console.log('   Subject:', subject);
-  console.log('   SMTP configured:', !!SMTP_USER && !!SMTP_PASS);
-  console.log('   FROM_EMAIL:', FROM_EMAIL);
+  log.debug('Sending email', { to, subject, smtpConfigured: !!SMTP_USER && !!SMTP_PASS });
 
   if (!SMTP_USER || !SMTP_PASS) {
-    console.warn('[sendEmail] SMTP credentials not configured. Email not sent.');
+    log.warn('SMTP credentials not configured. Email not sent.');
     return { success: false, message: 'Email service not configured' };
   }
 
   try {
-    console.log('[sendEmail] Sending email via SMTP...');
     const info = await transporter.sendMail({
       from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
       to,
@@ -47,10 +43,10 @@ export const sendEmail = async ({ to, subject, html }: EmailOptions) => {
       html,
     });
 
-    console.log('[sendEmail] Email sent successfully:', info.messageId);
+    log.info('Email sent successfully', { to, subject, messageId: info.messageId });
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('[sendEmail] Error sending email:', error);
+    log.error('Error sending email', error, { to, subject });
     return { success: false, error };
   }
 };
@@ -168,11 +164,7 @@ export const sendEmailVerification = async (
 ) => {
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
 
-  console.log('[sendEmailVerification] Preparing verification email');
-  console.log('   Email:', email);
-  console.log('   Name:', name);
-  console.log('   User Type:', userType);
-  console.log('   Verification URL:', verificationUrl);
+  log.debug('Preparing verification email', { email, name, userType });
 
   const volunteerMessage = 'Thank you for registering as a volunteer with Just a Drop!';
   const organizationMessage = 'Thank you for registering your organization with Just a Drop!';
