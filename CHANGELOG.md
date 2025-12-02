@@ -1,3 +1,22 @@
+# Changelog
+
+## 1.0.0 (2025-12-02)
+
+### Added
+- Shared validation module for opportunity creation (`packages/types/src/validation.ts`)
+- Real-time form validation with character counts and inline error messages
+- Comprehensive validation for all opportunity fields (title, description, location, dates, contact)
+
+### Changed
+- Backend routes now use shared validation constants from `@justadrop/types`
+- Opportunity service uses comprehensive validation functions
+- Updated `.gitignore` with additional patterns for IDE, cache, and temp files
+
+### Fixed
+- Authentication issue in opportunity creation endpoint (manual JWT decoding workaround)
+
+---
+
 # 1.0.0 (2025-11-27)
 
 
