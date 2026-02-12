@@ -248,3 +248,15 @@ export const opportunitiesFeedback = pgTable('opportunities_feedback', {
   opportunityIdIdx: index('opportunities_feedback_opp_id_idx').on(table.opportunityId),
   ratingIdx: index('opportunities_feedback_rating_idx').on(table.rating),
 }));
+
+export const moderators = pgTable('moderators', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
+  isActive: boolean('is_active').notNull().default(true),
+  assignedRegions: text('assigned_regions').array().default([]), // Optional: cities/states they moderate
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  userIdIdx: index('moderators_user_id_idx').on(table.userId),
+  isActiveIdx: index('moderators_is_active_idx').on(table.isActive),
+}));
