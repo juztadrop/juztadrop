@@ -2,9 +2,12 @@ import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { swagger } from '@elysiajs/swagger';
 import { healthRouter } from './routes';
+import { errorHandler, responseEnvelope } from './middleware';
 
 const app = new Elysia()
   .use(cors())
+  .use(errorHandler)
+  .use(responseEnvelope)
   .use(
     swagger({
       documentation: {
