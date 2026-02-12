@@ -24,7 +24,7 @@ apps/
   web/         Next.js frontend
   api/         Elysia backend
 packages/
-  db/          Drizzle schema and migrations
+  db/          Drizzle schema and migrations (schema cleared - ready for fresh setup)
   types/       Shared TypeScript types
 ```
 
@@ -55,7 +55,9 @@ cp .env.example .env
 cp apps/web/.env.example apps/web/.env
 ```
 
-Generate and run migrations:
+**Note**: The database schema has been cleared. You'll need to define your tables in `packages/db/src/schema.ts` before generating migrations.
+
+Once the schema is defined, generate and run migrations:
 
 ```bash
 make db-generate
