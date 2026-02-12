@@ -78,6 +78,13 @@
       "when": 1770934788727,
       "tag": "0010_overjoyed_siren",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1770935086832,
+      "tag": "0011_chubby_shotgun",
+      "breakpoints": true
     }
   ]
 }

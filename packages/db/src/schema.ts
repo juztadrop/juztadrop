@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, boolean, pgEnum, jsonb, index, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, pgEnum, jsonb, index, integer, check, unique } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 export const genderEnum = pgEnum('gender', ['male', 'female', 'other', 'prefer_not_to_say']);
@@ -38,6 +39,8 @@ export const otpTokens = pgTable('otp_tokens', {
 }, (table) => ({
   emailCodeIdx: index('otp_tokens_email_code_idx').on(table.email, table.code),
   expiresAtIdx: index('otp_tokens_expires_at_idx').on(table.expiresAt),
+  expiresAtUsedIdx: index('otp_tokens_expires_used_idx').on(table.expiresAt, table.used),
+  createdAtUsedIdx: index('otp_tokens_created_used_idx').on(table.createdAt, table.used),
 }));
 
 export const sessions = pgTable('sessions', {
@@ -117,6 +120,7 @@ export const organizations = pgTable('organizations', {
   deletedAtIdx: index('organizations_deleted_at_idx').on(table.deletedAt),
   // GIN index for causes array to enable efficient array queries
   causesIdx: index('organizations_causes_idx').on(table.causes),
+  descriptionLengthCheck: check('organizations_description_length_check', sql`${table.description} IS NULL OR char_length(${table.description}) <= 10000`),
 }));
 
 export const organizationDocuments = pgTable('organization_documents', {
@@ -196,6 +200,9 @@ export const opportunities = pgTable('opportunities', {
   // GIN indexes for array fields to enable efficient array queries
   causeCategoryNamesIdx: index('opportunities_cause_categories_idx').on(table.causeCategoryNames),
   requiredSkillsIdx: index('opportunities_required_skills_idx').on(table.requiredSkills),
+  volunteersCheck: check('volunteers_count_check', sql`(${table.minVolunteers} IS NULL OR ${table.maxVolunteers} IS NULL OR ${table.minVolunteers} <= ${table.maxVolunteers})`),
+  dateCheck: check('date_range_check', sql`(${table.startDate} IS NULL OR ${table.endDate} IS NULL OR ${table.startDate} <= ${table.endDate})`),
+  descriptionLengthCheck: check('opportunities_description_length_check', sql`char_length(${table.description}) <= 10000`),
 }));
 
 export const applicationStatusEnum = pgEnum('application_status', ['pending', 'approved', 'rejected']);
@@ -212,6 +219,7 @@ export const opportunityApplications = pgTable('opportunity_applications', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => ({
+  opportunityUserUnique: unique('applications_opp_user_unique').on(table.opportunityId, table.userId),
   opportunityUserIdx: index('applications_opp_user_idx').on(table.opportunityId, table.userId),
   opportunityIdIdx: index('applications_opp_id_idx').on(table.opportunityId),
   userIdIdx: index('applications_user_id_idx').on(table.userId),
@@ -221,9 +229,9 @@ export const opportunityApplications = pgTable('opportunity_applications', {
 
 export const volunteersFeedback = pgTable('volunteers_feedback', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }), // User giving feedback
   opportunityId: text('opportunity_id').notNull().references(() => opportunities.id, { onDelete: 'cascade' }),
-  volunteerId: text('volunteer_id').references(() => users.id, { onDelete: 'cascade' }),
+  volunteerId: text('volunteer_id').notNull().references(() => users.id, { onDelete: 'cascade' }), // Volunteer who attended (user ID)
   rating: integer('rating').notNull(), // 1 to 5
   testimonial: text('testimonial'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -233,6 +241,8 @@ export const volunteersFeedback = pgTable('volunteers_feedback', {
   userIdIdx: index('volunteers_feedback_user_id_idx').on(table.userId),
   volunteerIdIdx: index('volunteers_feedback_volunteer_id_idx').on(table.volunteerId),
   ratingIdx: index('volunteers_feedback_rating_idx').on(table.rating),
+  ratingCheck: check('volunteers_feedback_rating_check', sql`${table.rating} >= 1 AND ${table.rating} <= 5`),
+  testimonialLengthCheck: check('volunteers_feedback_testimonial_length_check', sql`${table.testimonial} IS NULL OR char_length(${table.testimonial}) <= 5000`),
 }));
 
 export const opportunitiesFeedback = pgTable('opportunities_feedback', {
@@ -247,6 +257,7 @@ export const opportunitiesFeedback = pgTable('opportunities_feedback', {
   userIdIdx: index('opportunities_feedback_user_id_idx').on(table.userId),
   opportunityIdIdx: index('opportunities_feedback_opp_id_idx').on(table.opportunityId),
   ratingIdx: index('opportunities_feedback_rating_idx').on(table.rating),
+  ratingCheck: check('opportunities_feedback_rating_check', sql`${table.rating} >= 1 AND ${table.rating} <= 5`),
 }));
 
 export const moderators = pgTable('moderators', {
@@ -296,4 +307,5 @@ export const moderationMonitoring = pgTable('moderation_monitoring', {
   assignedToIdx: index('moderation_monitoring_assigned_to_idx').on(table.assignedTo),
   reviewedByIdx: index('moderation_monitoring_reviewed_by_idx').on(table.reviewedBy),
   createdAtIdx: index('moderation_monitoring_created_at_idx').on(table.createdAt),
+  resolutionNotesLengthCheck: check('moderation_monitoring_resolution_notes_length_check', sql`${table.resolutionNotes} IS NULL OR char_length(${table.resolutionNotes}) <= 5000`),
 }));

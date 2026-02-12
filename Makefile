@@ -54,6 +54,9 @@ db-migrate: ## Run database migrations
 db-studio: ## Open Drizzle Studio
 	bun run db:studio
 
+db-cleanup: ## Cleanup expired sessions and OTP tokens
+	bun run db:cleanup
+
 docker-up: ## Start all services with Docker Compose
 	docker-compose up -d
 

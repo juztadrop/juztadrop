@@ -1,0 +1,12 @@
+ALTER TABLE "volunteers_feedback" ALTER COLUMN "volunteer_id" SET NOT NULL;--> statement-breakpoint
+CREATE INDEX "otp_tokens_expires_used_idx" ON "otp_tokens" USING btree ("expires_at","used");--> statement-breakpoint
+CREATE INDEX "otp_tokens_created_used_idx" ON "otp_tokens" USING btree ("created_at","used");--> statement-breakpoint
+ALTER TABLE "opportunity_applications" ADD CONSTRAINT "applications_opp_user_unique" UNIQUE("opportunity_id","user_id");--> statement-breakpoint
+ALTER TABLE "moderation_monitoring" ADD CONSTRAINT "moderation_monitoring_resolution_notes_length_check" CHECK ("moderation_monitoring"."resolution_notes" IS NULL OR char_length("moderation_monitoring"."resolution_notes") <= 5000);--> statement-breakpoint
+ALTER TABLE "opportunities" ADD CONSTRAINT "volunteers_count_check" CHECK (("opportunities"."min_volunteers" IS NULL OR "opportunities"."max_volunteers" IS NULL OR "opportunities"."min_volunteers" <= "opportunities"."max_volunteers"));--> statement-breakpoint
+ALTER TABLE "opportunities" ADD CONSTRAINT "date_range_check" CHECK (("opportunities"."start_date" IS NULL OR "opportunities"."end_date" IS NULL OR "opportunities"."start_date" <= "opportunities"."end_date"));--> statement-breakpoint
+ALTER TABLE "opportunities" ADD CONSTRAINT "opportunities_description_length_check" CHECK (char_length("opportunities"."description") <= 10000);--> statement-breakpoint
+ALTER TABLE "opportunities_feedback" ADD CONSTRAINT "opportunities_feedback_rating_check" CHECK ("opportunities_feedback"."rating" >= 1 AND "opportunities_feedback"."rating" <= 5);--> statement-breakpoint
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_description_length_check" CHECK ("organizations"."description" IS NULL OR char_length("organizations"."description") <= 10000);--> statement-breakpoint
+ALTER TABLE "volunteers_feedback" ADD CONSTRAINT "volunteers_feedback_rating_check" CHECK ("volunteers_feedback"."rating" >= 1 AND "volunteers_feedback"."rating" <= 5);--> statement-breakpoint
+ALTER TABLE "volunteers_feedback" ADD CONSTRAINT "volunteers_feedback_testimonial_length_check" CHECK ("volunteers_feedback"."testimonial" IS NULL OR char_length("volunteers_feedback"."testimonial") <= 5000);
