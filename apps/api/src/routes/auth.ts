@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
 import { cookie } from '@elysiajs/cookie';
-import { AuthController } from '../controllers/auth.controller';
+import { container } from '../container';
 
-const authController = new AuthController();
+const authController = container.getControllers().auth;
 
 export const authRouter = new Elysia({ prefix: '/auth', tags: ['auth'] })
   .use(cookie())

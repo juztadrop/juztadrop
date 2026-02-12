@@ -1,9 +1,9 @@
 import { Elysia } from 'elysia';
 import { cookie } from '@elysiajs/cookie';
 import { UnauthorizedError } from '../utils/errors';
-import { SessionService } from '../services/session.service';
+import { container } from '../container';
 
-const sessionService = new SessionService();
+const sessionService = container.getServices().session;
 
 export const authMiddleware = new Elysia({ name: 'auth' })
   .use(cookie())

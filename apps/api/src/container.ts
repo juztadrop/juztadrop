@@ -1,0 +1,83 @@
+import { OtpRepository } from './repositories/otp.repository';
+import { SessionRepository } from './repositories/session.repository';
+import { UserRepository } from './repositories/user.repository';
+import { EmailService } from './services/email.service';
+import { OtpService } from './services/otp.service';
+import { SessionService } from './services/session.service';
+import { AuthService } from './services/auth.service';
+import { AuthController } from './controllers/auth.controller';
+
+class Container {
+  private _repositories: {
+    otp: OtpRepository;
+    session: SessionRepository;
+    user: UserRepository;
+  } | null = null;
+
+  private _services: {
+    email: EmailService;
+    otp: OtpService;
+    session: SessionService;
+    auth: AuthService;
+  } | null = null;
+
+  private _controllers: {
+    auth: AuthController;
+  } | null = null;
+
+  private get repositories() {
+    if (!this._repositories) {
+      this._repositories = {
+        otp: new OtpRepository(),
+        session: new SessionRepository(),
+        user: new UserRepository(),
+      };
+    }
+    return this._repositories;
+  }
+
+  private get services() {
+    if (!this._services) {
+      const emailService = new EmailService();
+      const otpService = new OtpService(this.repositories.otp, emailService);
+      const sessionService = new SessionService(this.repositories.session, this.repositories.user);
+      const authService = new AuthService(
+        otpService,
+        sessionService,
+        emailService,
+        this.repositories.user
+      );
+
+      this._services = {
+        email: emailService,
+        otp: otpService,
+        session: sessionService,
+        auth: authService,
+      };
+    }
+    return this._services;
+  }
+
+  private get controllers() {
+    if (!this._controllers) {
+      this._controllers = {
+        auth: new AuthController(this.services.auth),
+      };
+    }
+    return this._controllers;
+  }
+
+  getRepositories() {
+    return this.repositories;
+  }
+
+  getServices() {
+    return this.services;
+  }
+
+  getControllers() {
+    return this.controllers;
+  }
+}
+
+export const container = new Container();

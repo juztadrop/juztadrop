@@ -5,27 +5,29 @@ import { logger } from '../utils/logger';
 
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-const sessionRepository = new SessionRepository();
-const userRepository = new UserRepository();
-
 export class SessionService {
+  constructor(
+    private readonly sessionRepository: SessionRepository,
+    private readonly userRepository: UserRepository
+  ) {}
+
   async createSession(userId: string): Promise<string> {
     const token = createId();
     const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
 
-    await sessionRepository.create(userId, token, expiresAt);
+    await this.sessionRepository.create(userId, token, expiresAt);
     logger.info({ userId }, 'Session created');
     return token;
   }
 
   async validateSession(token: string): Promise<{ userId: string; user: any } | null> {
-    const session = await sessionRepository.findByToken(token);
+    const session = await this.sessionRepository.findByToken(token);
 
     if (!session) {
       return null;
     }
 
-    const user = await userRepository.findById(session.userId);
+    const user = await this.userRepository.findById(session.userId);
 
     if (!user) {
       await this.deleteSession(token);
@@ -37,7 +39,7 @@ export class SessionService {
       return null;
     }
 
-    await sessionRepository.updateLastAccessed(session.id);
+    await this.sessionRepository.updateLastAccessed(session.id);
 
     return {
       userId: session.userId,
@@ -46,12 +48,12 @@ export class SessionService {
   }
 
   async deleteSession(token: string): Promise<void> {
-    await sessionRepository.deleteByToken(token);
+    await this.sessionRepository.deleteByToken(token);
     logger.info({ token }, 'Session deleted');
   }
 
   async deleteUserSessions(userId: string): Promise<void> {
-    await sessionRepository.deleteByUserId(userId);
+    await this.sessionRepository.deleteByUserId(userId);
     logger.info({ userId }, 'All user sessions deleted');
   }
 }

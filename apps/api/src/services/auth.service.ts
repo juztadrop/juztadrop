@@ -4,34 +4,36 @@ import { EmailService } from './email.service';
 import { UserRepository } from '../repositories/user.repository';
 import { logger } from '../utils/logger';
 
-const otpService = new OtpService();
-const sessionService = new SessionService();
-const emailService = new EmailService();
-const userRepository = new UserRepository();
-
 export class AuthService {
+  constructor(
+    private readonly otpService: OtpService,
+    private readonly sessionService: SessionService,
+    private readonly emailService: EmailService,
+    private readonly userRepository: UserRepository
+  ) {}
+
   async sendOtp(email: string): Promise<void> {
     const normalizedEmail = email.toLowerCase().trim();
-    await otpService.generateAndSendOtp(normalizedEmail);
+    await this.otpService.generateAndSendOtp(normalizedEmail);
   }
 
   async verifyOtpAndLogin(email: string, code: string): Promise<{ token: string; user: any }> {
     const normalizedEmail = email.toLowerCase().trim();
 
-    const isValid = await otpService.verifyOtp(normalizedEmail, code);
+    const isValid = await this.otpService.verifyOtp(normalizedEmail, code);
     if (!isValid) {
       throw new Error('Invalid or expired OTP code');
     }
 
-    let user = await userRepository.findByEmail(normalizedEmail);
+    let user = await this.userRepository.findByEmail(normalizedEmail);
 
     if (!user) {
-      user = await userRepository.create(normalizedEmail, true);
-      await emailService.sendWelcomeEmail(normalizedEmail);
+      user = await this.userRepository.create(normalizedEmail, true);
+      await this.emailService.sendWelcomeEmail(normalizedEmail);
       logger.info({ email: normalizedEmail }, 'New user created');
     } else if (!user.emailVerified) {
-      await userRepository.updateEmailVerified(user.id, true);
-      user = await userRepository.findById(user.id);
+      await this.userRepository.updateEmailVerified(user.id, true);
+      user = await this.userRepository.findById(user.id);
       if (!user) {
         throw new Error('Failed to update user');
       }
@@ -41,7 +43,7 @@ export class AuthService {
       throw new Error('Account is banned or deleted');
     }
 
-    const token = await sessionService.createSession(user.id);
+    const token = await this.sessionService.createSession(user.id);
 
     return {
       token,
@@ -55,11 +57,11 @@ export class AuthService {
   }
 
   async logout(token: string): Promise<void> {
-    await sessionService.deleteSession(token);
+    await this.sessionService.deleteSession(token);
   }
 
   async getCurrentUser(token: string): Promise<any> {
-    const session = await sessionService.validateSession(token);
+    const session = await this.sessionService.validateSession(token);
     if (!session) {
       return null;
     }
