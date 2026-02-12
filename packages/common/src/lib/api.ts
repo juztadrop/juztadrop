@@ -16,5 +16,5 @@ export async function apiRequest<T>(
     throw new Error(`API error: ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 }
