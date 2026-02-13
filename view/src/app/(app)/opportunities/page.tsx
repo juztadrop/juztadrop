@@ -26,6 +26,7 @@ export default function OpportunitiesPage() {
     <InProgressPage
       title="Opportunities"
       description="Browse and discover volunteering opportunities in your area. We're building this."
+      embedded
     />
   );
 }

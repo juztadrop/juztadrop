@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ViewHeader, ViewFooter } from '@/components/landing';
 import { useAuth } from '@/lib/auth/use-auth';
 import {
   Calendar,
@@ -28,20 +27,17 @@ export default function DashboardPage() {
 
   if (!isReady || isLoading || !user) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <ViewHeader />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="animate-pulse text-jad-foreground/60">Loading...</div>
-        </main>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
+          <p className="text-sm text-foreground/60">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <ViewHeader />
-      <main className="flex-1 pt-20 pb-16 sm:pt-24">
-        <div className="container">
+    <div className="container">
           {/* Welcome */}
           <div className="mb-10">
             <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
@@ -148,8 +144,5 @@ export default function DashboardPage() {
             </div>
           </section>
         </div>
-      </main>
-      <ViewFooter />
-    </div>
   );
 }

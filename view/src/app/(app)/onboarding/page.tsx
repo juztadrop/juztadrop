@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Heart, Building2, ArrowRight, LayoutDashboard } from 'lucide-react';
-import { ViewHeader, ViewFooter } from '@/components/landing';
 import { useAuth } from '@/lib/auth/use-auth';
 
 const ONBOARDING_COMPLETE_KEY = 'juztadrop_onboarding_complete';
@@ -37,20 +36,14 @@ export default function OnboardingPage() {
 
   if (!isReady || isLoading || !user) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <ViewHeader />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="animate-pulse text-jad-foreground/60">Loading...</div>
-        </main>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <ViewHeader />
-      <main className="flex-1 pt-20 pb-16 sm:pt-24">
-        <div className="container max-w-3xl">
+    <div className="container max-w-3xl">
           <div className="text-center mb-12">
             <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
               What would you like to do?
@@ -119,9 +112,6 @@ export default function OnboardingPage() {
               Go to dashboard
             </button>
           </div>
-        </div>
-      </main>
-      <ViewFooter />
     </div>
   );
 }

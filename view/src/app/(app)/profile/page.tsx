@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, User, Loader2, Phone, Mail, Heart, Sparkles } from 'lucide-react';
-import { ViewHeader, ViewFooter } from '@/components/landing';
 import { useAuth } from '@/lib/auth/use-auth';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -108,14 +107,11 @@ export default function ProfilePage() {
 
   if (!isReady || isLoading || !user) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <ViewHeader />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
-            <p className="text-sm text-foreground/60">Loading...</p>
-          </div>
-        </main>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
+          <p className="text-sm text-foreground/60">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -126,10 +122,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <ViewHeader />
-      <main className="flex-1 pt-20 pb-16 sm:pt-24">
-        <div className="container max-w-2xl">
+    <div className="container max-w-2xl">
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 text-sm font-medium text-foreground/70 hover:text-jad-primary transition-colors mb-8"
@@ -277,9 +270,6 @@ export default function ProfilePage() {
               loading={submitting}
             />
           </form>
-        </div>
-      </main>
-      <ViewFooter />
     </div>
   );
 }
