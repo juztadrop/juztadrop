@@ -1,123 +1,29 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { MapPin, Calendar, Clock, ChevronDown, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
-
-const CARD_WIDTH = 320;
-const CARD_GAP = 24;
-
-const LOCATIONS = ['Kolkata', 'Mumbai', 'Delhi', 'Bangalore', 'Chennai'];
-
-const OPPORTUNITIES = [
-  {
-    id: 1,
-    title: 'Lets feed the stray-dogs',
-    organisation: 'Calcutta, Dog Community',
-    location: 'New Town, Kolkata',
-    dateRange: '29th → 31st Dec',
-    timeRange: '8:30pm → 9:30pm',
-    category: 'animal-care',
-    icon: '🐕',
-  },
-  {
-    id: 2,
-    title: 'Beach cleanup drive',
-    organisation: 'Ocean Guardians',
-    location: 'Marine Drive, Mumbai',
-    dateRange: '15th → 16th Feb',
-    timeRange: '6:00am → 10:00am',
-    category: 'environment',
-    icon: '🌊',
-  },
-  {
-    id: 3,
-    title: 'Teach basic literacy',
-    organisation: 'Siksha Foundation',
-    location: 'Salt Lake, Kolkata',
-    dateRange: 'Every Saturday',
-    timeRange: '10:00am → 12:00pm',
-    category: 'education',
-    icon: '📚',
-  },
-  {
-    id: 4,
-    title: 'Community kitchen volunteer',
-    organisation: 'Annapurna Trust',
-    location: 'Park Street, Kolkata',
-    dateRange: 'Daily',
-    timeRange: '11:00am → 2:00pm',
-    category: 'community',
-    icon: '🍲',
-  },
-];
+import { OPPORTUNITIES, LOCATIONS } from '@/lib/constants';
+import { useOpportunityCarousel, useClickOutside } from '@/hooks';
 
 export function GetInvolvedSection() {
   const [location, setLocation] = useState('Kolkata');
   const [locationOpen, setLocationOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
+  const handleClickOutside = useCallback(() => setLocationOpen(false), []);
 
-  const totalCards = OPPORTUNITIES.length;
-  const cardsPerPage = 2;
-  const totalPages = Math.ceil(totalCards / cardsPerPage);
+  useClickOutside(locationRef, locationOpen, handleClickOutside);
 
-  const getScrollPerPage = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return CARD_WIDTH * 2 + CARD_GAP;
-    const { scrollWidth } = el;
-    const cardWidth = (scrollWidth - (totalCards - 1) * CARD_GAP) / totalCards;
-    return (cardWidth + CARD_GAP) * cardsPerPage;
-  }, [totalCards]);
-
-  const updateActiveIndex = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const scrollLeft = el.scrollLeft;
-    const scrollPerPage = getScrollPerPage();
-    const page = Math.round(scrollLeft / scrollPerPage);
-    setActiveIndex(Math.min(Math.max(0, page), totalPages - 1));
-  }, [totalPages, getScrollPerPage]);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    updateActiveIndex();
-    el.addEventListener('scroll', updateActiveIndex);
-    window.addEventListener('resize', updateActiveIndex);
-    return () => {
-      el.removeEventListener('scroll', updateActiveIndex);
-      window.removeEventListener('resize', updateActiveIndex);
-    };
-  }, [updateActiveIndex]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
-        setLocationOpen(false);
-      }
-    }
-    if (locationOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [locationOpen]);
-
-  const scrollToPage = (pageIndex: number) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const scrollPerPage = getScrollPerPage();
-    const targetScroll = pageIndex * scrollPerPage;
-    el.scrollTo({ left: targetScroll, behavior: 'smooth' });
-  };
-
-  const scroll = (direction: 'left' | 'right') => {
-    const nextPage =
-      direction === 'left'
-        ? Math.max(0, activeIndex - 1)
-        : Math.min(totalPages - 1, activeIndex + 1);
-    scrollToPage(nextPage);
-  };
+  const {
+    scrollRef,
+    activePageIndex,
+    totalPages,
+    scrollToPage,
+    goToNextPage,
+    goToPrevPage,
+  } = useOpportunityCarousel({
+    totalItems: OPPORTUNITIES.length,
+    itemsPerPage: 2,
+  });
 
   return (
     <section className="bg-jad-mint/40 py-20 md:py-28">
@@ -207,7 +113,7 @@ export function GetInvolvedSection() {
         <div className="mt-8 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => scroll('left')}
+            onClick={goToPrevPage}
             className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
             aria-label="Previous opportunities"
           >
@@ -220,16 +126,16 @@ export function GetInvolvedSection() {
                 type="button"
                 onClick={() => scrollToPage(i)}
                 className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                  i === activeIndex ? 'bg-jad-primary scale-125' : 'bg-jad-primary/25 hover:bg-jad-primary/50'
+                  i === activePageIndex ? 'bg-jad-primary scale-125' : 'bg-jad-primary/25 hover:bg-jad-primary/50'
                 }`}
                 aria-label={`Go to page ${i + 1}`}
-                aria-current={i === activeIndex}
+                aria-current={i === activePageIndex}
               />
             ))}
           </div>
           <button
             type="button"
-            onClick={() => scroll('right')}
+            onClick={goToNextPage}
             className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
             aria-label="Next opportunities"
           >

@@ -2,35 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  UserPlus,
-  FileEdit,
-  Compass,
-  Building2,
-  Clock,
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/common';
-
-const VOLUNTEER_STEPS = [
-  { number: 1, title: 'Sign up', description: 'Create your account.', icon: UserPlus, href: '/signup' },
-  { number: 2, title: 'Fill details', description: 'Add skills, causes, availability.', icon: FileEdit },
-  { number: 3, title: 'Explore & apply', description: 'Find opportunities and apply.', icon: Compass },
-];
-
-const NGO_STEPS = [
-  { number: 1, title: 'Sign up', description: 'Create organisation account.', icon: UserPlus, href: '/signup' },
-  { number: 2, title: 'Fill details', description: 'Complete profile and contact info.', icon: FileEdit },
-  { number: 3, title: 'Create NGO', description: 'Add details, mission, documentation.', icon: Building2 },
-  { number: 4, title: 'Wait for approval', description: 'Verification by our team.', icon: Clock },
-  { number: 5, title: 'Create & manage', description: 'Post opportunities, track impact.', icon: Sparkles, badge: 'After approval' },
-];
-
-type FlowType = 'volunteer' | 'ngo';
+import { VOLUNTEER_STEPS, NGO_STEPS, type HowItWorksFlowType } from '@/lib/constants';
 
 export function HowItWorksSection() {
-  const [flow, setFlow] = useState<FlowType>('volunteer');
+  const [flow, setFlow] = useState<HowItWorksFlowType>('volunteer');
   const steps = flow === 'volunteer' ? VOLUNTEER_STEPS : NGO_STEPS;
 
   return (

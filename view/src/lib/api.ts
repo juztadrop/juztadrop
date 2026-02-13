@@ -1,1 +1,1 @@
-export { apiRequest } from './common';
+export { apiRequest } from './common/lib/api';
