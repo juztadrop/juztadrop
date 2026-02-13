@@ -18,4 +18,5 @@ export {
   VOLUNTEER_SKILLS,
   SKILL_EXPERTISE,
   AVAILABILITY_OPTIONS,
+  GENDER_OPTIONS,
 } from './volunteer';

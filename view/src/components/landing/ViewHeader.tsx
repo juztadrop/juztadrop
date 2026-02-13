@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, LogOut, User, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, User, LayoutDashboard, UserCircle } from 'lucide-react';
 import { useClickOutside } from '@/hooks';
 import { useAuth } from '@/lib/auth/use-auth';
 import { cn } from '@/lib/common';
@@ -85,8 +85,16 @@ export function ViewHeader() {
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-foreground/10 bg-white py-2 shadow-xl">
                   <div className="px-4 py-2 text-sm text-foreground/70">
-                    {user.email}
+                    {user.name || user.email}
                   </div>
+                  <Link
+                    href="/profile"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium text-foreground hover:bg-jad-mint/60"
+                  >
+                    <UserCircle className="h-4 w-4" />
+                    Profile
+                  </Link>
                   <button
                     type="button"
                     onClick={() => {
@@ -165,8 +173,16 @@ export function ViewHeader() {
                 {isAuthenticated && user ? (
                   <>
                     <div className="px-2 py-1.5 text-xs text-foreground/60 truncate">
-                      {user.email}
+                      {user.name || user.email}
                     </div>
+                    <Link
+                      href="/profile"
+                      onClick={closeMenu}
+                      className="flex w-full items-center justify-center gap-2 py-2.5 text-sm font-medium text-jad-foreground"
+                    >
+                      <UserCircle className="h-4 w-4" />
+                      Profile
+                    </Link>
                     <button
                       type="button"
                       onClick={() => {

@@ -13,6 +13,7 @@ import {
   ArrowRight,
   MapPin,
   Building2,
+  UserCircle,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -47,8 +48,15 @@ export default function DashboardPage() {
               Your dashboard
             </h1>
             <p className="mt-1 text-foreground/70">
-              Welcome back, {user.email} — volunteer, create an NGO, or do both.
+              Welcome back, {user.name || user.email} — volunteer, create an NGO, or do both.
             </p>
+            <Link
+              href="/profile"
+              className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-jad-primary hover:underline"
+            >
+              <UserCircle className="h-4 w-4" />
+              Manage profile
+            </Link>
           </div>
 
           {/* Quick actions */}
