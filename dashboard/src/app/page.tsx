@@ -1,11 +1,11 @@
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   LayoutWithHeader,
-  Button
+  Button,
 } from '../lib/common';
 
 export default function DashboardPage() {
@@ -23,18 +23,14 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome to your admin dashboard
-            </p>
+            <p className="text-muted-foreground">Welcome to your admin dashboard</p>
           </div>
-          
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle>Overview</CardTitle>
-                <CardDescription>
-                  Quick stats and insights
-                </CardDescription>
+                <CardDescription>Quick stats and insights</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -42,13 +38,11 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Activity</CardTitle>
-                <CardDescription>
-                  Recent activity and updates
-                </CardDescription>
+                <CardDescription>Recent activity and updates</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
@@ -56,13 +50,11 @@ export default function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Settings</CardTitle>
-                <CardDescription>
-                  Manage your preferences
-                </CardDescription>
+                <CardDescription>Manage your preferences</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">

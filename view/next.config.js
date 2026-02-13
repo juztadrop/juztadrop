@@ -13,7 +13,7 @@ const nextConfig = {
         net: false,
         tls: false,
       };
-      
+
       // Ignore @infisical/sdk completely in client bundle (server-only)
       const webpack = require('webpack');
       config.plugins = config.plugins || [];
@@ -23,7 +23,7 @@ const nextConfig = {
         })
       );
     }
-    
+
     // Ignore .node files (native binaries) - they should never be bundled for client
     if (!isServer) {
       const webpack = require('webpack');
@@ -34,7 +34,7 @@ const nextConfig = {
         })
       );
     }
-    
+
     return config;
   },
 };

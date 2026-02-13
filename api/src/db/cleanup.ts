@@ -8,10 +8,8 @@ import { fileURLToPath } from 'url';
  */
 export async function cleanupExpiredSessions() {
   const now = new Date();
-  const result = await db
-    .delete(sessions)
-    .where(lt(sessions.expiresAt, now));
-  
+  const result = await db.delete(sessions).where(lt(sessions.expiresAt, now));
+
   console.log(`Cleaned up expired sessions`);
   return result;
 }
@@ -22,10 +20,8 @@ export async function cleanupExpiredSessions() {
  */
 export async function cleanupExpiredOtpTokens() {
   const now = new Date();
-  const result = await db
-    .delete(otpTokens)
-    .where(lt(otpTokens.expiresAt, now));
-  
+  const result = await db.delete(otpTokens).where(lt(otpTokens.expiresAt, now));
+
   console.log(`Cleaned up expired OTP tokens`);
   return result;
 }
@@ -36,16 +32,11 @@ export async function cleanupExpiredOtpTokens() {
 export async function cleanupUsedOtpTokens(olderThanHours: number = 24) {
   const cutoffDate = new Date();
   cutoffDate.setHours(cutoffDate.getHours() - olderThanHours);
-  
+
   const result = await db
     .delete(otpTokens)
-    .where(
-      and(
-        sql`${otpTokens.used} = true`,
-        lt(otpTokens.createdAt, cutoffDate)
-      )
-    );
-  
+    .where(and(sql`${otpTokens.used} = true`, lt(otpTokens.createdAt, cutoffDate)));
+
   console.log(`Cleaned up used OTP tokens older than ${olderThanHours} hours`);
   return result;
 }
@@ -55,12 +46,12 @@ export async function cleanupUsedOtpTokens(olderThanHours: number = 24) {
  */
 export async function runCleanupTasks() {
   console.log('Starting cleanup tasks...');
-  
+
   try {
     await cleanupExpiredSessions();
     await cleanupExpiredOtpTokens();
     await cleanupUsedOtpTokens(24);
-    
+
     console.log('Cleanup tasks completed');
   } catch (error) {
     console.error('Cleanup tasks failed:', error);

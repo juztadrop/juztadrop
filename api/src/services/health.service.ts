@@ -31,7 +31,7 @@ export class HealthService {
     try {
       // Check database connection
       await db.execute(sql`SELECT 1`);
-      
+
       return {
         status: 'ready',
         timestamp: new Date().toISOString(),

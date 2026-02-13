@@ -1,13 +1,13 @@
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   LayoutWithHeader,
   HeroSection,
-  Section
+  Section,
 } from '../lib/common';
 
 export default function HomePage() {
@@ -36,15 +36,13 @@ export default function HomePage() {
           </>
         }
       />
-      
+
       <Section>
         <div className="grid gap-6 md:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Connect</CardTitle>
-              <CardDescription>
-                Find organizations that need your help
-              </CardDescription>
+              <CardDescription>Find organizations that need your help</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
@@ -52,13 +50,11 @@ export default function HomePage() {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Volunteer</CardTitle>
-              <CardDescription>
-                Make a meaningful impact
-              </CardDescription>
+              <CardDescription>Make a meaningful impact</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
@@ -66,13 +62,11 @@ export default function HomePage() {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Grow</CardTitle>
-              <CardDescription>
-                Build your volunteer journey
-              </CardDescription>
+              <CardDescription>Build your volunteer journey</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
