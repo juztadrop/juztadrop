@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { OnboardingSkeleton } from '@/components/skeletons';
 import { Heart, Building2, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
 
@@ -35,11 +36,7 @@ export default function OnboardingPage() {
   };
 
   if (!isReady || isLoading || !user) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
-      </div>
-    );
+    return <OnboardingSkeleton />;
   }
 
   return (

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/use-auth';
+import { DashboardSkeleton } from '@/components/skeletons';
 import {
   Calendar,
   CheckCircle2,
@@ -26,14 +27,7 @@ export default function DashboardPage() {
   }, [isReady, isAuthenticated, router]);
 
   if (!isReady || isLoading || !user) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
-          <p className="text-sm text-foreground/60">Loading...</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

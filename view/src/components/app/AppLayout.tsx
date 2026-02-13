@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
-import { ViewFooter } from '@/components/landing';
+import { AppFooter } from './AppFooter';
+import { AppShellSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/lib/auth/use-auth';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -29,14 +30,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (!isReady || !isAuthenticated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-jad-primary border-t-transparent" />
-          <p className="text-sm text-foreground/60">Loading...</p>
-        </div>
-      </div>
-    );
+    return <AppShellSkeleton />;
   }
 
   return (
@@ -72,7 +66,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 pt-14 md:pl-64 md:pt-0">
         <div className="flex min-h-screen flex-col">
           <div className="flex flex-1 flex-col pb-16 pt-20 md:pt-24">{children}</div>
-          <ViewFooter />
+          <AppFooter />
         </div>
       </main>
     </div>
