@@ -7,12 +7,16 @@ import { OtpService } from './services/otp.service';
 import { SessionService } from './services/session.service';
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
+import { AdminRepository } from './repositories/admin.repository';
+import { AdminService } from './services/admin.service';
+import { AdminController } from './controllers/admin.controller';
 
 class Container {
   private _repositories: {
     otp: OtpRepository;
     session: SessionRepository;
     user: UserRepository;
+    admin: AdminRepository;
     organization: OrganizationRepository;
   } | null = null;
 
@@ -21,10 +25,12 @@ class Container {
     otp: OtpService;
     session: SessionService;
     auth: AuthService;
+    admin: AdminService;
   } | null = null;
 
   private _controllers: {
     auth: AuthController;
+    admin: AdminController;
   } | null = null;
 
   private get repositories() {
@@ -33,6 +39,7 @@ class Container {
         otp: new OtpRepository(),
         session: new SessionRepository(),
         user: new UserRepository(),
+        admin: new AdminRepository(),
         organization: new OrganizationRepository(),
       };
     }
@@ -43,19 +50,25 @@ class Container {
     if (!this._services) {
       const emailService = new EmailService();
       const otpService = new OtpService(this.repositories.otp, emailService);
-      const sessionService = new SessionService(this.repositories.session, this.repositories.user);
+      const sessionService = new SessionService(
+        this.repositories.session,
+        this.repositories.user,
+        this.repositories.admin
+      );
       const authService = new AuthService(
         otpService,
         sessionService,
         emailService,
         this.repositories.user
       );
+      const adminService = new AdminService(this.repositories.user, this.repositories.admin);
 
       this._services = {
         email: emailService,
         otp: otpService,
         session: sessionService,
         auth: authService,
+        admin: adminService,
       };
     }
     return this._services;
@@ -65,6 +78,7 @@ class Container {
     if (!this._controllers) {
       this._controllers = {
         auth: new AuthController(this.services.auth),
+        admin: new AdminController(this.services.admin),
       };
     }
     return this._controllers;
