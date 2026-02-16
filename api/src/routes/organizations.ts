@@ -29,6 +29,7 @@ export const organizationsRouter = new Elysia({ prefix: '/organizations', tags: 
         city: body.city,
         state: body.state,
         country: body.country ?? 'India',
+        documents: body.documents,
       });
       return { organization: org };
     },
@@ -46,6 +47,21 @@ export const organizationsRouter = new Elysia({ prefix: '/organizations', tags: 
         city: t.Optional(t.String()),
         state: t.Optional(t.String()),
         country: t.Optional(t.String()),
+        documents: t.Optional(
+          t.Array(
+            t.Object({
+              documentType: t.Union([
+                t.Literal('registration_certificate'),
+                t.Literal('80G_certificate'),
+                t.Literal('12A_certificate'),
+                t.Literal('PAN'),
+                t.Literal('proof_of_address'),
+              ]),
+              documentAssetUrl: t.String(),
+              format: t.String(),
+            })
+          )
+        ),
       }),
     }
   )

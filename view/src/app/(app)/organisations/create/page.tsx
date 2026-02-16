@@ -29,6 +29,7 @@ import {
   ChipGroup,
   FormActions,
 } from '@/components/ui/form';
+import { uploadToStorage } from '@/lib/storage';
 
 const ORG_TYPES = ['NGO', 'NPO', 'Trust', 'Foundation', 'Society'] as const;
 
@@ -59,20 +60,55 @@ export default function CreateOrganisationPage() {
       causes: f.causes.includes(value) ? f.causes.filter((x) => x !== value) : [...f.causes, value],
     }));
 
+  const MAX_FILE_SIZE = 1024 * 1024; // 1 MB
+
   const handleFileChange = (field: 'registrationDoc' | 'proofDoc') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setForm((f) => ({ ...f, [field]: file }));
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`File must be under 1 MB. ${file.name} is ${(file.size / 1024).toFixed(0)} KB.`);
+        e.target.value = '';
+        return;
+      }
+      setForm((f) => ({ ...f, [field]: file }));
+    }
+  };
+
+  const getFormatFromFile = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'pdf') return 'pdf';
+    if (['jpg', 'jpeg'].includes(ext)) return ext;
+    if (ext === 'png') return 'png';
+    return ext || 'bin';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const documents: Array<{ documentType: string; documentAssetUrl: string; format: string }> = [];
+
+      if (form.registrationDoc) {
+        const { assetKey } = await uploadToStorage(form.registrationDoc, 'documents');
+        documents.push({
+          documentType: 'registration_certificate',
+          documentAssetUrl: assetKey,
+          format: getFormatFromFile(form.registrationDoc),
+        });
+      }
+      if (form.proofDoc) {
+        const { assetKey } = await uploadToStorage(form.proofDoc, 'documents');
+        documents.push({
+          documentType: 'proof_of_address',
+          documentAssetUrl: assetKey,
+          format: getFormatFromFile(form.proofDoc),
+        });
+      }
+
       const res = await fetch('/api/organizations', {
-        credentials: 'include',
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
         body: JSON.stringify({
           orgName: form.orgName,
           description: form.description || undefined,
@@ -86,6 +122,7 @@ export default function CreateOrganisationPage() {
           city: form.city || undefined,
           state: form.state || undefined,
           country: 'India',
+          ...(documents.length > 0 && { documents }),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -291,12 +328,9 @@ export default function CreateOrganisationPage() {
 
             <FormSection
               title="Documents"
-              description="Verification documents (coming soon)"
+              description="Verification documents (optional, max 1 MB each)"
               icon={<FileCheck className="h-5 w-5" />}
             >
-              <p className="text-sm text-foreground/60">
-                Document upload will be available soon. Your organisation will be verified after submission.
-              </p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label="Registration certificate">
                   <label
@@ -307,7 +341,7 @@ export default function CreateOrganisationPage() {
                   >
                     <Upload className="h-5 w-5 text-jad-primary shrink-0" />
                     <span className="text-sm text-foreground/80 truncate">
-                      {form.registrationDoc?.name ?? 'Choose PDF (max 5MB)'}
+                      {form.registrationDoc?.name ?? 'Choose PDF (max 1 MB)'}
                     </span>
                     <input
                       type="file"
@@ -326,7 +360,7 @@ export default function CreateOrganisationPage() {
                   >
                     <Upload className="h-5 w-5 text-jad-primary shrink-0" />
                     <span className="text-sm text-foreground/80 truncate">
-                      {form.proofDoc?.name ?? 'Choose file'}
+                      {form.proofDoc?.name ?? 'Choose PDF or image (max 1 MB)'}
                     </span>
                     <input
                       type="file"
