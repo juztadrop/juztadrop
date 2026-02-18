@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia';
 import { cookie } from '@elysiajs/cookie';
-import { UnauthorizedError, ValidationError } from '../utils/errors';
+import { UnauthorizedError } from '../utils/errors';
 import { container } from '../container';
 
 const sessionService = container.getServices().session;
@@ -33,11 +33,11 @@ export const verifyXAuthHeaderMiddleware = new Elysia({ name: 'verify-x-auth-id'
 
     if (!xAuthId) {
       // Ensure UnauthorizedError is defined or use: throw new Error('Unauthorized')
-      throw new ValidationError('x-auth-id header required');
+      throw new UnauthorizedError('x-auth-id header required');
     }
 
     if (!expected || xAuthId !== expected) {
-      throw new ValidationError('Invalid x-auth-id');
+      throw new UnauthorizedError('Invalid x-auth-id');
     }
 
     return {

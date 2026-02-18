@@ -1,10 +1,6 @@
-import type { AuthUser } from '../types/auth.js';
-import { OtpService } from './otp.service.js';
-import { SessionService } from './session.service.js';
-import { EmailService } from './email.service.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import { logger } from '../utils/logger.js';
-import { ValidationError, ForbiddenError } from '../utils/errors.js';
+import { ValidationError, ForbiddenError, UnauthorizedError } from '../utils/errors.js';
 import { ModeratorRepository, Moderator } from '@/repositories/moderator.repository.js';
 import { withTransaction } from '@/utils/transaction.js';
 import { createId } from '@paralleldrive/cuid2';
@@ -18,7 +14,7 @@ export class ModeratorService {
 
   verifyXAuthId(XAuthId: string) {
     if (!(XAuthId === process.env.X_AUTH_ID)) {
-      throw new ValidationError('Invalid x-auth-id');
+      throw new UnauthorizedError('Invalid x-auth-id');
     }
   }
 
