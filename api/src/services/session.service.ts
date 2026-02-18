@@ -59,7 +59,7 @@ export class SessionService {
       return null;
     }
 
-    const moderator = await this.moderatorRepository.findById(session.userId);
+    const moderator = await this.moderatorRepository.findByUserId(session.userId);
 
     if (!moderator) {
       await this.deleteSession(token);

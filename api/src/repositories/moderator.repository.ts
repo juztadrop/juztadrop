@@ -37,7 +37,7 @@ export class ModeratorRepository {
 
     const u = row.user as unknown as User;
 
-    const moderator: Moderator = {
+    return {
       id: row.moderator.id,
       userId: row.moderator.userId,
       isActive: row.moderator.isActive,
@@ -58,8 +58,6 @@ export class ModeratorRepository {
         updatedAt: u.updatedAt,
       },
     };
-
-    return moderator;
   }
   async findByUserId(userId: string): Promise<Moderator | null> {
     const result = await db
