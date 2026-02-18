@@ -5,6 +5,7 @@ import { healthRouter, authRouter, usersRouter, organizationsRouter, opportuniti
 import { errorHandler, responseEnvelope } from './middleware';
 import { runMigrations } from './db/index.js';
 import { logger } from './utils/logger';
+import { validateEnvOnStartup } from './config/env.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const shouldRunMigrations = process.env.RUN_MIGRATIONS !== 'false';
@@ -69,6 +70,8 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Run migrations before starting the server
 async function startServer() {
+  validateEnvOnStartup();
+
   // Run migrations only if enabled (default: true, set RUN_MIGRATIONS=false to disable)
   if (shouldRunMigrations) {
     try {
