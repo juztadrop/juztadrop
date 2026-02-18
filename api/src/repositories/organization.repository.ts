@@ -1,7 +1,9 @@
 import { db } from '../db/index.js';
-import { organizations, organizationMembers } from '../db/schema.js';
+import { organizations, organizationMembers, organizationDocuments } from '../db/schema.js';
 import { eq, inArray, and } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
+
+const ORG_OWNER_ROLE = 'owner' as const;
 
 export interface Organization {
   id: string;
@@ -38,31 +40,47 @@ export class OrganizationRepository {
     city?: string;
     state?: string;
     country?: string;
+    documents?: Array<{ documentType: string; documentAssetUrl: string; format: string }>;
   }): Promise<Organization> {
     const id = createId();
-    await db.insert(organizations).values({
-      id,
-      createdBy: data.createdBy,
-      orgName: data.orgName,
-      description: data.description ?? null,
-      causes: data.causes ?? [],
-      website: data.website ?? null,
-      registrationNumber: data.registrationNumber ?? null,
-      contactPersonName: data.contactPersonName,
-      contactPersonEmail: data.contactPersonEmail,
-      contactPersonNumber: data.contactPersonNumber ?? null,
-      address: data.address ?? null,
-      city: data.city ?? null,
-      state: data.state ?? null,
-      country: data.country ?? 'India',
-    });
+    await db.transaction(async (tx) => {
+      await tx.insert(organizations).values({
+        id,
+        createdBy: data.createdBy,
+        orgName: data.orgName,
+        description: data.description ?? null,
+        causes: data.causes ?? [],
+        website: data.website ?? null,
+        registrationNumber: data.registrationNumber ?? null,
+        contactPersonName: data.contactPersonName,
+        contactPersonEmail: data.contactPersonEmail,
+        contactPersonNumber: data.contactPersonNumber ?? null,
+        address: data.address ?? null,
+        city: data.city ?? null,
+        state: data.state ?? null,
+        country: data.country ?? 'India',
+      });
 
-    // Add creator as owner
-    await db.insert(organizationMembers).values({
-      id: createId(),
-      organizationId: id,
-      userId: data.createdBy,
-      role: 'owner',
+      // Add creator as owner
+      await tx.insert(organizationMembers).values({
+        id: createId(),
+        organizationId: id,
+        userId: data.createdBy,
+        role: ORG_OWNER_ROLE,
+      });
+
+      // Add documents if provided
+      if (data.documents?.length) {
+        await tx.insert(organizationDocuments).values(
+          data.documents.map((doc) => ({
+            id: createId(),
+            ngoId: id,
+            documentType: doc.documentType as (typeof documentTypeEnum.enumValues)[number],
+            documentAssetUrl: doc.documentAssetUrl,
+            format: doc.format,
+          }))
+        );
+      }
     });
 
     const org = await db.query.organizations.findFirst({
@@ -128,10 +146,7 @@ export class OrganizationRepository {
       .from(organizationMembers)
       .where(eq(organizationMembers.userId, userId));
     const orgIds = [
-      ...new Set([
-        ...createdByOrgs.map((o) => o.id),
-        ...memberOrgs.map((m) => m.organizationId),
-      ]),
+      ...new Set([...createdByOrgs.map((o) => o.id), ...memberOrgs.map((m) => m.organizationId)]),
     ];
     if (orgIds.length === 0) return [];
     const list = await db.query.organizations.findMany({
@@ -168,10 +183,7 @@ export class OrganizationRepository {
       .select()
       .from(organizationMembers)
       .where(
-        and(
-          eq(organizationMembers.organizationId, ngoId),
-          eq(organizationMembers.userId, userId)
-        )
+        and(eq(organizationMembers.organizationId, ngoId), eq(organizationMembers.userId, userId))
       );
     const member = members[0];
     return member != null && (member.role === 'owner' || member.role === 'admin');

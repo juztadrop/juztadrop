@@ -1,8 +1,9 @@
 {
-  "name": "justadrop",
+  "name": "juztadrop",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
+    "prepare": "husky",
     "dev:api": "cd api && bun run dev",
     "dev:view": "cd view && bun run dev",
     "dev:dashboard": "cd dashboard && bun run dev",
@@ -23,6 +24,11 @@
     "lint": "bun run format:check && bun run typecheck"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "prettier": "^3.2.5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md}": "prettier --write"
   }
 }
