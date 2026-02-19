@@ -14,3 +14,5 @@ export { FormActions } from './FormActions';
 export type { FormActionsProps } from './FormActions';
 export { StepperWizard } from './StepperWizard';
 export type { WizardStep, StepperWizardProps } from './StepperWizard';
+export { SearchableChipGroup } from './SearchableChipGroup';
+export type { SearchableChipGroupProps } from './SearchableChipGroup';

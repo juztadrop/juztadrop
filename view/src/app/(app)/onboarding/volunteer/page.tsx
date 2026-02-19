@@ -7,7 +7,14 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth/use-auth';
 import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
 import { FormPageSkeleton } from '@/components/skeletons';
-import { FormField, FormInput, FormSection, ChipGroup, StepperWizard } from '@/components/ui/form';
+import {
+  FormField,
+  FormInput,
+  FormSection,
+  ChipGroup,
+  StepperWizard,
+  SearchableChipGroup,
+} from '@/components/ui/form';
 import type { WizardStep } from '@/components/ui/form';
 import { useVolunteerOnboarding } from '@/hooks';
 
@@ -81,7 +88,12 @@ export default function VolunteerOnboardingPage() {
           description="Select all that resonate with you"
           icon={<Heart className="h-5 w-5" />}
         >
-          <ChipGroup options={VOLUNTEER_CAUSES} selected={form.causes} onChange={toggleCause} />
+          <SearchableChipGroup
+            options={VOLUNTEER_CAUSES}
+            selected={form.causes}
+            onChange={toggleCause}
+            placeholder="Search causes…"
+          />
         </FormSection>
       ),
     },
@@ -96,10 +108,11 @@ export default function VolunteerOnboardingPage() {
           description="Add skills that could help organisations"
           icon={<Sparkles className="h-5 w-5" />}
         >
-          <ChipGroup
+          <SearchableChipGroup
             options={VOLUNTEER_SKILLS.map((s) => ({ value: s, label: s }))}
             selected={form.skills}
             onChange={toggleSkill}
+            placeholder="Search skills…"
             variant="mint"
           />
         </FormSection>

@@ -19,7 +19,7 @@ function buildPayload(form: ProfileForm) {
     phone: form.phone || undefined,
     gender: form.gender || undefined,
     volunteering: {
-      isInterest: form.causes.length > 0 || form.skills.length > 0,
+      isInterest: true,
       skills: form.skills,
       causes: form.causes,
     },

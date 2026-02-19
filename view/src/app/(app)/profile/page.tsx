@@ -12,7 +12,14 @@ import {
 } from '@/lib/constants';
 import { cn } from '@/lib/common';
 import { FormPageSkeleton } from '@/components/skeletons';
-import { FormField, FormInput, FormSection, ChipGroup, StepperWizard } from '@/components/ui/form';
+import {
+  FormField,
+  FormInput,
+  FormSection,
+  ChipGroup,
+  StepperWizard,
+  SearchableChipGroup,
+} from '@/components/ui/form';
 import type { WizardStep } from '@/components/ui/form';
 import { useProfileForm } from '@/hooks';
 
@@ -126,7 +133,12 @@ export default function ProfilePage() {
           description="Select causes that resonate with you"
           icon={<Heart className="h-5 w-5" />}
         >
-          <ChipGroup options={VOLUNTEER_CAUSES} selected={form.causes} onChange={toggleCause} />
+          <SearchableChipGroup
+            options={VOLUNTEER_CAUSES}
+            selected={form.causes}
+            onChange={toggleCause}
+            placeholder="Search causes…"
+          />
         </FormSection>
       ),
     },
@@ -142,23 +154,13 @@ export default function ProfilePage() {
           icon={<Sparkles className="h-5 w-5" />}
         >
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {VOLUNTEER_SKILLS.map((skill) => (
-                <button
-                  key={skill}
-                  type="button"
-                  onClick={() => toggleSkill(skill)}
-                  className={cn(
-                    'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
-                    form.skills.some((s) => s.name === skill)
-                      ? 'bg-jad-mint text-jad-foreground border border-jad-primary/30'
-                      : 'border border-foreground/20 bg-white text-foreground/80 hover:border-jad-primary/40'
-                  )}
-                >
-                  {skill}
-                </button>
-              ))}
-            </div>
+            <SearchableChipGroup
+              options={VOLUNTEER_SKILLS.map((s) => ({ value: s, label: s }))}
+              selected={form.skills.map((s) => s.name)}
+              onChange={toggleSkill}
+              placeholder="Search skills…"
+              variant="mint"
+            />
             {form.skills.length > 0 && (
               <div className="rounded-xl border border-jad-primary/20 bg-jad-mint/10 p-4 space-y-3">
                 <p className="text-xs font-medium text-foreground/70">Expertise level</p>

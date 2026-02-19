@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
       headers: {
         Cookie: `sessionToken=${token}`,
       },
+      cache: 'no-store',
     });
 
     const text = await res.text();
