@@ -76,27 +76,31 @@ export default function VolunteersPage() {
 
   return (
     <div className="container">
-      {/* Header + filter toggle */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
-            Volunteers
-          </h1>
-          <p className="mt-1 text-foreground/70">
-            {isLoading
-              ? 'Loading volunteers…'
-              : `${total} volunteer${total !== 1 ? 's' : ''} found`}
-          </p>
-        </div>
+      {/* Hero header */}
+      <div className="mb-10 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-jad-foreground sm:text-4xl">
+          {isLoading ? (
+            'Volunteers'
+          ) : (
+            <>
+              <span className="text-jad-primary">{total}</span> {total === 1 ? 'person' : 'people'},
+              united by purpose
+            </>
+          )}
+        </h1>
+        <p className="mx-auto mt-2 max-w-lg text-foreground/60">
+          People making a difference in their communities. Filter by cause or skill to find
+          volunteers.
+        </p>
 
         <button
           type="button"
           onClick={() => setFiltersOpen((v) => !v)}
           className={cn(
-            'inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all',
+            'mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all',
             filtersOpen || activeFilterCount > 0
               ? 'border-jad-primary/30 bg-jad-mint/40 text-jad-primary'
-              : 'border-foreground/20 bg-white text-foreground/80 hover:border-jad-primary/30 hover:bg-jad-mint/20'
+              : 'border-foreground/15 bg-white/80 text-foreground/70 hover:border-jad-primary/30 hover:bg-jad-mint/20'
           )}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -107,7 +111,7 @@ export default function VolunteersPage() {
             </span>
           )}
           <ChevronDown
-            className={cn('h-4 w-4 transition-transform', filtersOpen && 'rotate-180')}
+            className={cn('h-3.5 w-3.5 transition-transform', filtersOpen && 'rotate-180')}
           />
         </button>
       </div>
@@ -172,9 +176,9 @@ export default function VolunteersPage() {
 
       {/* Results */}
       {isLoading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-2xl" />
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="h-28 rounded-2xl" />
           ))}
         </div>
       ) : volunteers.length === 0 ? (
@@ -199,7 +203,7 @@ export default function VolunteersPage() {
           )}
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {volunteers.map((v) => (
             <VolunteerCard key={v.id} volunteer={v} />
           ))}
