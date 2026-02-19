@@ -110,7 +110,7 @@ export default function VolunteerOnboardingPage() {
   const allDone = !!form.name.trim() && form.causes.length > 0;
 
   return (
-    <div className="container max-w-2xl">
+    <div className="container">
       <div className="flex items-center gap-4 mb-8">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-jad-mint text-jad-primary shadow-lg shadow-jad-primary/10">
           <Heart className="h-7 w-7" />
