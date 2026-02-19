@@ -162,21 +162,27 @@ export default function ProfilePage() {
             {form.skills.length > 0 && (
               <div className="rounded-xl border border-jad-primary/20 bg-jad-mint/10 p-4 space-y-3">
                 <p className="text-xs font-medium text-foreground/70">Expertise level</p>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {form.skills.map((s) => (
                     <div key={s.name} className="flex items-center justify-between gap-3">
-                      <span className="text-sm text-jad-foreground">{s.name}</span>
-                      <select
-                        value={s.expertise}
-                        onChange={(e) => setSkillExpertise(s.name, e.target.value)}
-                        className="rounded-lg border border-foreground/15 bg-white px-3 py-1.5 text-sm text-jad-foreground min-w-[100px]"
-                      >
+                      <span className="text-sm font-medium text-jad-foreground">{s.name}</span>
+                      <div className="flex rounded-lg border border-foreground/10 bg-white p-0.5">
                         {SKILL_EXPERTISE.map((exp) => (
-                          <option key={exp} value={exp}>
+                          <button
+                            key={exp}
+                            type="button"
+                            onClick={() => setSkillExpertise(s.name, exp)}
+                            className={cn(
+                              'rounded-md px-3 py-1 text-xs font-medium capitalize transition-all duration-150',
+                              s.expertise === exp
+                                ? 'bg-jad-primary text-white shadow-sm'
+                                : 'text-foreground/60 hover:text-foreground/80'
+                            )}
+                          >
                             {exp}
-                          </option>
+                          </button>
                         ))}
-                      </select>
+                      </div>
                     </div>
                   ))}
                 </div>
