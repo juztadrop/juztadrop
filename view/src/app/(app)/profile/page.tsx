@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { User, Phone, Mail, Heart, Sparkles } from 'lucide-react';
+import { User, Phone, Mail, Heart, Sparkles, Check, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
 import {
   VOLUNTEER_CAUSES,
@@ -11,13 +11,33 @@ import {
 } from '@/lib/constants';
 import { cn } from '@/lib/common';
 import { FormPageSkeleton } from '@/components/skeletons';
-import { FormField, FormInput, FormSection, ChipGroup, FormActions } from '@/components/ui/form';
+import { FormField, FormInput, FormSection, ChipGroup } from '@/components/ui/form';
 import { useProfileForm } from '@/hooks';
+
+function SaveIndicator({ status }: { status: string }) {
+  if (status === 'saving') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-foreground/50 animate-in fade-in">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        Saving…
+      </span>
+    );
+  }
+  if (status === 'saved') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-jad-primary animate-in fade-in">
+        <Check className="h-3 w-3" />
+        Saved
+      </span>
+    );
+  }
+  return null;
+}
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
-  const { form, submitting, toggleCause, toggleSkill, setSkillExpertise, handleSubmit, setForm } =
+  const { form, saveStatus, updateField, setGender, toggleCause, toggleSkill, setSkillExpertise } =
     useProfileForm();
 
   if (!isReady || isLoading || !user) {
@@ -35,15 +55,18 @@ export default function ProfilePage() {
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-jad-mint text-jad-primary shadow-lg shadow-jad-primary/10">
           <User className="h-7 w-7" />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-jad-foreground sm:text-3xl">Your profile</h1>
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-jad-foreground sm:text-3xl">Your profile</h1>
+            <SaveIndicator status={saveStatus} />
+          </div>
           <p className="mt-1 text-sm text-foreground/70">
-            Manage your personal details and volunteering preferences.
+            Manage your personal details and volunteering preferences. Changes save automatically.
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="space-y-8">
         <FormSection
           title="Account"
           description="Your sign-in email cannot be changed"
@@ -69,7 +92,7 @@ export default function ProfilePage() {
               id="name"
               type="text"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) => updateField('name', e.target.value)}
               placeholder="Your name"
             />
           </FormField>
@@ -78,7 +101,7 @@ export default function ProfilePage() {
               id="phone"
               type="tel"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) => updateField('phone', e.target.value)}
               placeholder="+91 98765 43210"
               icon={<Phone className="h-5 w-5" />}
             />
@@ -87,12 +110,7 @@ export default function ProfilePage() {
             <ChipGroup
               options={GENDER_OPTIONS}
               selected={form.gender ? [form.gender] : []}
-              onChange={(value) =>
-                setForm((f) => ({
-                  ...f,
-                  gender: f.gender === value ? '' : value,
-                }))
-              }
+              onChange={setGender}
             />
           </FormField>
         </FormSection>
@@ -153,9 +171,7 @@ export default function ProfilePage() {
             )}
           </div>
         </FormSection>
-
-        <FormActions submitLabel="Save changes" loading={submitting} />
-      </form>
+      </div>
     </div>
   );
 }
