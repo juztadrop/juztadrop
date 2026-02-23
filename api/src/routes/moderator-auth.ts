@@ -22,6 +22,7 @@ const getTokenFromCookie = (cookie: Context['cookie']): string | undefined => {
   const sessionToken = cookie.sessionToken;
   return typeof sessionToken?.value === 'string' ? sessionToken.value : undefined;
 };
+
 export const moderatorAuthRouter = new Elysia({
   prefix: '/moderator-auth',
   tags: ['moderator-auth'],
