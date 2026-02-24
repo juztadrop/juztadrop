@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -37,7 +36,6 @@ export default function DashboardPage() {
             <Button variant="ghost" size="sm" onClick={logout}>
               logout
             </Button>
-            <Link href={'/login'}>Login</Link>
           </>
         ),
       }}
