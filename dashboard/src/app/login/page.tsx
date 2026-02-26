@@ -73,7 +73,12 @@ function LoginPageContent() {
           </p>
 
           {step === 'email' ? (
-            <EmailForm email={email} handleSendOtp={handleSendOtp} loading setEmail={setEmail} />
+            <EmailForm
+              email={email}
+              handleSendOtp={handleSendOtp}
+              loading={loading}
+              setEmail={setEmail}
+            />
           ) : (
             <OTPVerifyForm
               otp={otp}
