@@ -28,7 +28,7 @@ export function ViewHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-foreground/5 bg-white/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-foreground/5 bg-white backdrop-blur-xl">
       <div className="container flex h-14 items-center justify-between pt-[env(safe-area-inset-top)] sm:h-16 transition-all duration-300">
         <Link
           href="/"
@@ -129,7 +129,7 @@ export function ViewHeader() {
           ) : (
             <Link
               href="/login"
-              className="ml-2 rounded-full bg-jad-primary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-jad-primary/25 transition-all duration-200 hover:bg-jad-dark hover:shadow-xl hover:shadow-jad-primary/30 hover:scale-[1.02] active:scale-[0.98]"
+              className="ml-2 rounded-full bg-jad-primary px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-jad-dark hover:shadow-xl hover:shadow-jad-primary/30 hover:scale-[1.02] active:scale-[0.98]"
             >
               Login
             </Link>

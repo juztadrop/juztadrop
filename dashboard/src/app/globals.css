@@ -62,3 +62,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+html,
+body {
+  font-family: 'Helvetica Neue';
+}

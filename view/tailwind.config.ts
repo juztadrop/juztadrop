@@ -29,11 +29,10 @@ const config: Config = {
       colors: {
         jad: {
           primary: '#E52E81',
-          dark: '#116A58',
-          accent: '#1FA889',
-          mint: '#E6F3EF',
-          foreground: '#0F3D34',
-          // Aliases for existing usage
+          dark: '#610B30',
+          accent: '#FF4D9D',
+          mint: '#FFF0F6',
+          foreground: '#3D041C',
           teal: '#15836B',
           'teal-dark': '#116A58',
           'teal-light': '#1FA889',
