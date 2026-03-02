@@ -28,7 +28,7 @@ const config: Config = {
     extend: {
       colors: {
         jad: {
-          primary: '#15836B',
+          primary: '#E52E81',
           dark: '#116A58',
           accent: '#1FA889',
           mint: '#E6F3EF',
