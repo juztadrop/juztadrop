@@ -6,7 +6,7 @@
 
 
 
-<h2 align="center"> Just a Drop</h2>
+<h2 align="center"> Juzt a Drop</h2>
 <h4 align="center"> A platform connecting volunteers with organizations that need help. </h4>
 
 <br/><br/>
