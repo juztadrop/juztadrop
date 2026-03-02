@@ -29,7 +29,7 @@ const config: Config = {
       colors: {
         jad: {
           primary: '#E52E81',
-          dark: '#610B30',
+          dark: '#bb2465',
           accent: '#FF4D9D',
           mint: '#FFF0F6',
           foreground: '#3D041C',
