@@ -32,6 +32,7 @@ const imageReveal = {
       stiffness: 90,
       damping: 14,
       mass: 0.7,
+      ease: [1, -0.4, 0.35, 0.95],
     },
   },
 };
@@ -164,7 +165,7 @@ export function LandingHero() {
                 <button
                   type="button"
                   aria-label="Search"
-                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-jad-accent text-white shadow-lg shadow-jad-accent/30 transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-jad-accent/40 active:scale-95 sm:rounded-r-xl sm:rounded-l-none"
+                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-jad-accent text-white transition-all duration-200 hover:bg-jad-primary active:scale-95 sm:rounded-r-xl sm:rounded-l-none"
                 >
                   <Search className="h-5 w-5" strokeWidth={2.5} />
                 </button>

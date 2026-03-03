@@ -1,6 +1,8 @@
 'use client';
 
+import * as React from 'react';
 import { Users, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useVolunteersList, causeLabelForVolunteers } from '@/hooks/useVolunteersList';
 import { VolunteerCard } from '@/components/volunteers/VolunteerCard';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +10,111 @@ import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
 import { SearchableChipGroup } from '@/components/ui/form';
 import { FilterBadge } from '@/components/ui';
 import { cn } from '@/lib/common';
+
+const fadeUpSpring = {
+  hidden: { opacity: 0, y: 12 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      type: 'spring',
+      stiffness: 300,
+      damping: 30,
+      mass: 1,
+    },
+  }),
+};
+
+function useCountUp(target: number, duration: number = 1200, delay: number = 300) {
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    let startTime: number | null = null;
+    let rafId: number;
+
+    const timeout = setTimeout(() => {
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setCount(Math.floor(eased * target));
+        if (progress < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          setCount(target);
+        }
+      };
+      rafId = requestAnimationFrame(step);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(rafId);
+    };
+  }, [target, duration, delay]);
+
+  return count;
+}
+
+function AnimatedDigit({ digit, prevDigit }: { digit: string; prevDigit: string }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        overflow: 'hidden',
+        position: 'relative',
+        height: '1.2em',
+        verticalAlign: 'bottom',
+      }}
+    >
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={digit}
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: '0%', opacity: 1 }}
+          exit={{ y: '-100%', opacity: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 300,
+            damping: 28,
+            mass: 1,
+          }}
+          style={{ display: 'inline-block', lineHeight: '1.2em' }}
+        >
+          {digit}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+function AnimatedNumber({ value }: { value: number }) {
+  const str = String(value);
+  const prevRef = React.useRef(str);
+  const prevStr = prevRef.current;
+
+  React.useEffect(() => {
+    prevRef.current = str;
+  });
+
+  const maxLen = Math.max(str.length, prevStr.length);
+  const paddedCurrent = str.padStart(maxLen, ' ');
+  const paddedPrev = prevStr.padStart(maxLen, ' ');
+
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'flex-end' }}>
+      {paddedCurrent.split('').map((digit, i) => (
+        <AnimatedDigit
+          key={i}
+          digit={digit.trim() === '' ? '\u00A0' : digit}
+          prevDigit={paddedPrev[i]?.trim() === '' ? '\u00A0' : (paddedPrev[i] ?? digit)}
+        />
+      ))}
+    </span>
+  );
+}
 
 export default function VolunteersPage() {
   const {
@@ -24,23 +131,40 @@ export default function VolunteersPage() {
     clearAllFilters,
   } = useVolunteersList();
 
+  const volunteersCount = useCountUp(500, 1200, 300);
+
   return (
     <div className="container">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-jad-foreground sm:text-4xl">
-          {isLoading ? (
-            'Volunteers'
-          ) : (
-            <>
-              <span className="text-jad-primary">{total}</span> {total === 1 ? 'person' : 'people'},
-              united by purpose
-            </>
-          )}
-        </h1>
-        <p className="mx-auto mt-2 max-w-lg text-foreground/60">
-          People making a difference in their communities. Filter by cause or skill to find
-          volunteers.
-        </p>
+        <div className="flex flex-col align-center justify-center">
+          <motion.h1
+            className="text-3xl font-bold tracking-tight text-jad-primary sm:text-4xl"
+            custom={0}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUpSpring}
+          >
+            <AnimatedNumber value={volunteersCount} />
+          </motion.h1>
+          <motion.h1
+            className="text-3xl font-bold tracking-tight text-jad-foreground sm:text-4xl"
+            custom={1}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUpSpring}
+          >
+            Volunteers
+          </motion.h1>
+        </div>
+        <motion.p
+          className="mx-auto mt-2 max-w-lg text-foreground/60"
+          custom={2}
+          initial="hidden"
+          animate="visible"
+          variants={fadeUpSpring}
+        >
+          People making a difference in their communities.
+        </motion.p>
       </div>
 
       <div className="mb-6 flex items-center">
