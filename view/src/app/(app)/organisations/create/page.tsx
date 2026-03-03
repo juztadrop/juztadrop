@@ -15,16 +15,7 @@ import {
   ChipGroup,
   FormActions,
 } from '@/components/ui/form';
-import { useCreateOrganization } from '@/hooks';
-
-const ORG_TYPE_OPTIONS = [
-  { value: '', label: 'Select type' },
-  { value: 'NGO', label: 'NGO' },
-  { value: 'NPO', label: 'NPO' },
-  { value: 'Trust', label: 'Trust' },
-  { value: 'Foundation', label: 'Foundation' },
-  { value: 'Society', label: 'Society' },
-];
+import { useCreateOrganization, useOrganizationTypes } from '@/hooks';
 
 const CITY_OPTIONS = [
   { value: '', label: 'Select city' },
@@ -34,6 +25,7 @@ const CITY_OPTIONS = [
 export default function CreateOrganisationPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
+  const { options: orgTypeOptions, isLoading: orgTypesLoading } = useOrganizationTypes();
   const { form, submitting, toggleCause, handleFileChange, handleSubmit, setForm } =
     useCreateOrganization();
 
@@ -84,8 +76,9 @@ export default function CreateOrganisationPage() {
                 id="type"
                 value={form.type}
                 onChange={(value) => setForm({ ...form, type: value })}
-                options={ORG_TYPE_OPTIONS}
-                placeholder="Select type"
+                options={orgTypeOptions}
+                placeholder={orgTypesLoading ? 'Loading...' : 'Select type'}
+                disabled={orgTypesLoading}
               />
             </FormField>
             <FormField label="Registration number" htmlFor="registrationNumber">

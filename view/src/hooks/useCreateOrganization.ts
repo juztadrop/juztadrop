@@ -104,6 +104,7 @@ export function useCreateOrganization() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orgName: form.orgName,
+          type: form.type || undefined,
           description: form.description || undefined,
           causes: form.causes,
           website: form.website || undefined,

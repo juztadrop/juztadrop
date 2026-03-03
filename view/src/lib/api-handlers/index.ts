@@ -6,6 +6,7 @@
 export { authOtpSend, authOtpVerify, authMe, authLogout } from './handlers/auth';
 export { usersMePatch } from './handlers/users';
 export { organizationsPost, organizationsGet } from './handlers/organizations';
+export { organizationTypesGet } from './handlers/organization-types';
 export {
   opportunitiesGet,
   opportunitiesPost,
