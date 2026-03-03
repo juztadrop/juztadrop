@@ -1,3 +1,12 @@
+# [0.0.22](https://github.com/juztadrop/juztadrop/compare/v0.0.21...v0.0.22) (2026-03-03)
+
+### Changes
+
+* feat: add organization_types as entity (#80) (8bf61f8)
+* feat(view): Add Re-usebale Dropdown Component (#65) (f0b9d19)
+
+---
+
 # [0.0.21](https://github.com/juztadrop/juztadrop/compare/v1.0.17...v0.0.21) (2026-03-03)
 
 ### Changes
