@@ -4,8 +4,6 @@
   <img src="https://raw.githubusercontent.com/juztadrop/juztadrop/refs/heads/main/view/public/images/home.png" alt="JuztADrop Community" width="400" />
 </p>
 
-
-
 <h2 align="center"> Juzt a Drop</h2>
 <h4 align="center"> A platform connecting volunteers with organizations that need help. </h4>
 
@@ -13,7 +11,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/CONTRIBUTING.md)
-
 
 ## Stack
 
@@ -80,6 +77,7 @@ bun run dev:dashboard # Dashboard on :3002
 ```
 
 **Services will be available at:**
+
 - API: http://localhost:3001
 - API Docs: http://localhost:3001/swagger
 - View App: http://localhost:3000
@@ -147,5 +145,3 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for contribution guidelines.
 MIT License - see [LICENSE](LICENSE) file for details.
 
 </samp>
-
-

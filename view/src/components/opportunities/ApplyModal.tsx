@@ -26,10 +26,9 @@ export function ApplyModal({
     setSubmitting(true);
     try {
       const res = await fetch(`/api/opportunities/${opportunityId}/apply`, {
-        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
+        credentials: 'include',
         body: JSON.stringify({ motivationDescription: motivation || undefined }),
       });
       const data = await res.json().catch(() => ({}));
@@ -46,16 +45,10 @@ export function ApplyModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4">
-      <div
-        className="absolute inset-0"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
       <div className="relative w-full max-w-md rounded-2xl border border-foreground/10 bg-white p-6 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-jad-foreground">
-            Apply to {opportunityTitle}
-          </h2>
+          <h2 className="text-xl font-bold text-jad-foreground">Apply to {opportunityTitle}</h2>
           <button
             type="button"
             onClick={onClose}

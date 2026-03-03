@@ -158,10 +158,9 @@ export default function CreateOpportunityPage() {
         longitude: form.longitude ?? undefined,
       };
       const res = await fetch('/api/opportunities', {
-        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
+        credentials: 'include',
         body: JSON.stringify(body),
       });
       const data = await res.json().catch(() => ({}));

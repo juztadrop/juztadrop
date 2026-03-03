@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Phone, Mail, Heart, Sparkles, Check, Loader2 } from 'lucide-react';
+import { User, Phone, Mail, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
 import {
   VOLUNTEER_CAUSES,
@@ -21,27 +21,9 @@ import {
   SearchableChipGroup,
 } from '@/components/ui/form';
 import type { WizardStep } from '@/components/ui/form';
+import { SaveIndicator } from '@/components/ui';
+import type { SaveIndicatorStatus } from '@/components/ui';
 import { useProfileForm } from '@/hooks';
-
-function SaveIndicator({ status }: { status: string }) {
-  if (status === 'saving') {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-foreground/50">
-        <Loader2 className="h-3 w-3 animate-spin" />
-        Saving…
-      </span>
-    );
-  }
-  if (status === 'saved') {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-jad-primary">
-        <Check className="h-3 w-3" />
-        Saved
-      </span>
-    );
-  }
-  return null;
-}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -214,7 +196,11 @@ export default function ProfilePage() {
         steps={steps}
         activeStep={activeStep}
         onStepChange={setActiveStep}
-        headerExtra={<SaveIndicator status={saveStatus} />}
+        headerExtra={
+          <SaveIndicator
+            status={(saveStatus === 'error' ? 'idle' : saveStatus) as SaveIndicatorStatus}
+          />
+        }
       />
     </div>
   );

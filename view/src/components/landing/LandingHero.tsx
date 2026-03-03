@@ -34,35 +34,73 @@ export function LandingHero() {
                 <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-jad-mint/30 px-4 py-3 transition-colors focus-within:bg-jad-mint/50 sm:rounded-l-xl sm:rounded-r-none">
                   <span className="shrink-0 text-jad-foreground/50">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">Where</span>
-                    <input type="text" placeholder="Eg. Kolkata" className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0"  />
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">
+                      Where
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Eg. Kolkata"
+                      className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0"
+                    />
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-jad-mint/30 px-4 py-3 transition-colors focus-within:bg-jad-mint/50 sm:rounded-none">
                   <span className="shrink-0 text-jad-foreground/50">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                      />
                     </svg>
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">Category</span>
-                    <input type="text" placeholder="Eg. Care" className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0" />
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">
+                      Category
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Eg. Care"
+                      className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0"
+                    />
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-jad-mint/30 px-4 py-3 transition-colors focus-within:bg-jad-mint/50 sm:rounded-none">
                   <span className="shrink-0 text-jad-foreground/50">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">When</span>
-                    <input type="text" placeholder="Tomorrow" className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0" />
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-jad-foreground/60">
+                      When
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Tomorrow"
+                      className="w-full bg-transparent text-sm text-jad-foreground placeholder:text-jad-foreground/50 focus:outline-none focus:ring-0 ring-offset-0"
+                    />
                   </div>
                 </div>
                 <button

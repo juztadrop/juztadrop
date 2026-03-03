@@ -2,21 +2,18 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { MapPin, Calendar, Clock, ChevronDown, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
+import {
+  MapPin,
+  Calendar,
+  Clock,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpRight,
+} from 'lucide-react';
 import { LOCATIONS } from '@/lib/constants';
+import { formatDateRange } from '@/lib/date';
 import { useOpportunityCarousel, useClickOutside } from '@/hooks';
-
-function formatDate(d: string | Date | null): string {
-  if (!d) return 'TBD';
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-}
-
-function formatDateRange(start: string | Date | null, end: string | Date | null): string {
-  if (!start && !end) return 'Ongoing';
-  if (!end) return formatDate(start);
-  return `${formatDate(start)} – ${formatDate(end)}`;
-}
 
 const ICONS = ['🌊', '📚', '🐕', '🍲', '🌱', '❤️'];
 
@@ -42,17 +39,11 @@ export function GetInvolvedSection() {
       .finally(() => setLoading(false));
   }, [location]);
 
-  const {
-    scrollRef,
-    activePageIndex,
-    totalPages,
-    scrollToPage,
-    goToNextPage,
-    goToPrevPage,
-  } = useOpportunityCarousel({
-    totalItems: opportunities.length,
-    itemsPerPage: 2,
-  });
+  const { scrollRef, activePageIndex, totalPages, scrollToPage, goToNextPage, goToPrevPage } =
+    useOpportunityCarousel({
+      totalItems: opportunities.length,
+      itemsPerPage: 2,
+    });
 
   return (
     <section className="bg-jad-mint/40 py-12 sm:py-16 md:py-24 lg:py-28">
@@ -81,7 +72,9 @@ export function GetInvolvedSection() {
                     setLocationOpen(false);
                   }}
                   className={`w-full px-5 py-2.5 text-left text-sm font-medium transition-colors ${
-                    location === 'All' ? 'bg-jad-mint text-jad-foreground' : 'text-foreground hover:bg-jad-mint/50'
+                    location === 'All'
+                      ? 'bg-jad-mint text-jad-foreground'
+                      : 'text-foreground hover:bg-jad-mint/50'
                   }`}
                 >
                   All
@@ -126,7 +119,8 @@ export function GetInvolvedSection() {
           ) : opportunities.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-jad-primary/20 bg-white/60 py-12 text-center">
               <p className="text-foreground/70">
-                No upcoming opportunities in {location === 'All' ? 'your area' : location}. Check back soon!
+                No upcoming opportunities in {location === 'All' ? 'your area' : location}. Check
+                back soon!
               </p>
               <Link
                 href="/opportunities"
@@ -184,38 +178,40 @@ export function GetInvolvedSection() {
         </div>
 
         {!loading && opportunities.length > 0 && (
-        <div className="mt-6 flex items-center justify-center gap-4 sm:mt-8 sm:gap-6">
-          <button
-            type="button"
-            onClick={goToPrevPage}
-            className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
-            aria-label="Previous opportunities"
-          >
-            <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
-          </button>
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToPage(i)}
-                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                  i === activePageIndex ? 'bg-jad-primary scale-125' : 'bg-jad-primary/25 hover:bg-jad-primary/50'
-                }`}
-                aria-label={`Go to page ${i + 1}`}
-                aria-current={i === activePageIndex}
-              />
-            ))}
+          <div className="mt-6 flex items-center justify-center gap-4 sm:mt-8 sm:gap-6">
+            <button
+              type="button"
+              onClick={goToPrevPage}
+              className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
+              aria-label="Previous opportunities"
+            >
+              <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
+            </button>
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => scrollToPage(i)}
+                  className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                    i === activePageIndex
+                      ? 'bg-jad-primary scale-125'
+                      : 'bg-jad-primary/25 hover:bg-jad-primary/50'
+                  }`}
+                  aria-label={`Go to page ${i + 1}`}
+                  aria-current={i === activePageIndex}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={goToNextPage}
+              className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
+              aria-label="Next opportunities"
+            >
+              <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={goToNextPage}
-            className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-jad-primary/30 bg-white text-jad-primary shadow-sm transition-all duration-200 hover:border-jad-primary hover:bg-jad-mint hover:shadow-md"
-            aria-label="Next opportunities"
-          >
-            <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
-          </button>
-        </div>
         )}
       </div>
     </section>
