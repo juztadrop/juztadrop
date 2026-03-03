@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   MapPin,
   Calendar,
@@ -10,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpRight,
+  Search,
 } from 'lucide-react';
 import { LOCATIONS } from '@/lib/constants';
 import { formatDateRange } from '@/lib/date';
@@ -17,15 +19,65 @@ import { useOpportunityCarousel, useClickOutside } from '@/hooks';
 
 const ICONS = ['🌊', '📚', '🐕', '🍲', '🌱', '❤️'];
 
+const DROPDOWN_MAX_HEIGHT = 280;
+const SEARCH_PLACEHOLDER = 'Search city…';
+
 export function GetInvolvedSection() {
-  const [location, setLocation] = useState('All');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const cityParam = searchParams.get('city') ?? '';
+
+  const [location, setLocationState] = useState('All');
   const [locationOpen, setLocationOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const locationRef = useRef<HTMLDivElement>(null);
-  const handleClickOutside = useCallback(() => setLocationOpen(false), []);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const setLocation = useCallback(
+    (value: string) => {
+      setLocationState(value);
+      const params = new URLSearchParams(searchParams.toString());
+      if (value && value !== 'All') {
+        params.set('city', value);
+      } else {
+        params.delete('city');
+      }
+      const qs = params.toString();
+      router.replace(qs ? `/?${qs}` : '/', { scroll: false });
+    },
+    [router, searchParams]
+  );
+
+  useEffect(() => {
+    const city = cityParam.trim();
+    if (city && (LOCATIONS as readonly string[]).includes(city)) {
+      setLocationState(city);
+    } else if (!city) {
+      setLocationState('All');
+    }
+  }, [cityParam]);
+
+  const handleClickOutside = useCallback(() => {
+    setLocationOpen(false);
+    setSearchQuery('');
+  }, []);
 
   useClickOutside(locationRef, locationOpen, handleClickOutside);
+
+  const filteredOptions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return ['All', ...LOCATIONS];
+    return ['All', ...LOCATIONS.filter((loc) => loc.toLowerCase().includes(q))];
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (locationOpen) {
+      setSearchQuery('');
+      setTimeout(() => searchInputRef.current?.focus(), 0);
+    }
+  }, [locationOpen]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -64,38 +116,49 @@ export function GetInvolvedSection() {
               />
             </button>
             {locationOpen && (
-              <div className="absolute left-0 top-full z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-jad-primary/20 bg-white py-2 shadow-xl">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocation('All');
-                    setLocationOpen(false);
-                  }}
-                  className={`w-full px-5 py-2.5 text-left text-sm font-medium transition-colors ${
-                    location === 'All'
-                      ? 'bg-jad-mint text-jad-foreground'
-                      : 'text-foreground hover:bg-jad-mint/50'
-                  }`}
+              <div
+                className="absolute left-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-jad-primary/20 bg-white shadow-xl"
+                style={{ maxHeight: DROPDOWN_MAX_HEIGHT }}
+              >
+                <div className="sticky top-0 border-b border-foreground/10 bg-white p-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 focus-within:border-neutral-300 focus-within:ring-0">
+                    <Search className="h-4 w-4 shrink-0 text-foreground/50" />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={SEARCH_PLACEHOLDER}
+                      className="min-w-0 flex-1 border-0 bg-transparent text-sm text-jad-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-0"
+                      aria-label="Search city"
+                    />
+                  </div>
+                </div>
+                <div
+                  className="overflow-y-auto py-2"
+                  style={{ maxHeight: DROPDOWN_MAX_HEIGHT - 56 }}
                 >
-                  All
-                </button>
-                {LOCATIONS.map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    onClick={() => {
-                      setLocation(loc);
-                      setLocationOpen(false);
-                    }}
-                    className={`w-full px-5 py-2.5 text-left text-sm font-medium transition-colors ${
-                      loc === location
-                        ? 'bg-jad-mint text-jad-foreground'
-                        : 'text-foreground hover:bg-jad-mint/50'
-                    }`}
-                  >
-                    {loc}
-                  </button>
-                ))}
+                  {filteredOptions.map((loc) => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => {
+                        setLocation(loc);
+                        setLocationOpen(false);
+                      }}
+                      className={`w-full px-5 py-2.5 text-left text-sm font-medium transition-colors ${
+                        loc === location
+                          ? 'bg-jad-mint text-jad-foreground'
+                          : 'text-foreground hover:bg-jad-mint/50'
+                      }`}
+                    >
+                      {loc}
+                    </button>
+                  ))}
+                  {filteredOptions.length === 0 && (
+                    <p className="px-5 py-3 text-sm text-foreground/50">No city matches</p>
+                  )}
+                </div>
               </div>
             )}
           </div>
