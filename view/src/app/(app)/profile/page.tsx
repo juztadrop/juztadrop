@@ -4,12 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Phone, Mail, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
-import {
-  VOLUNTEER_CAUSES,
-  VOLUNTEER_SKILLS,
-  SKILL_EXPERTISE,
-  GENDER_OPTIONS,
-} from '@/lib/constants';
+import { VOLUNTEER_SKILLS, SKILL_EXPERTISE, GENDER_OPTIONS } from '@/lib/constants';
+import { useCauses } from '@/hooks';
 import { cn } from '@/lib/common';
 import { FormPageSkeleton } from '@/components/skeletons';
 import {
@@ -28,6 +24,7 @@ import { useProfileForm } from '@/hooks';
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
+  const { options: causeOptions } = useCauses();
   const { form, saveStatus, updateField, setGender, toggleCause, toggleSkill, setSkillExpertise } =
     useProfileForm();
   const [activeStep, setActiveStep] = useState('account');
@@ -116,7 +113,7 @@ export default function ProfilePage() {
           icon={<Heart className="h-5 w-5" />}
         >
           <SearchableChipGroup
-            options={VOLUNTEER_CAUSES}
+            options={causeOptions}
             selected={form.causes}
             onChange={toggleCause}
             placeholder="Search causes…"

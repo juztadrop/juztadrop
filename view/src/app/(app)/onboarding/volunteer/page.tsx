@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Heart, User, Sparkles, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth/use-auth';
-import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
+import { VOLUNTEER_SKILLS } from '@/lib/constants';
+import { useCauses } from '@/hooks';
 import { FormPageSkeleton } from '@/components/skeletons';
 import {
   FormField,
@@ -41,6 +42,7 @@ function SaveIndicator({ status }: { status: string }) {
 export default function VolunteerOnboardingPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
+  const { options: causeOptions } = useCauses();
   const { form, saveStatus, updateName, toggleCause, toggleSkill } = useVolunteerOnboarding();
   const [activeStep, setActiveStep] = useState('name');
 
@@ -89,7 +91,7 @@ export default function VolunteerOnboardingPage() {
           icon={<Heart className="h-5 w-5" />}
         >
           <SearchableChipGroup
-            options={VOLUNTEER_CAUSES}
+            options={causeOptions}
             selected={form.causes}
             onChange={toggleCause}
             placeholder="Search causes…"
@@ -149,7 +151,7 @@ export default function VolunteerOnboardingPage() {
           href="/dashboard"
           className="order-2 sm:order-1 text-center text-sm font-medium text-foreground/70 hover:text-jad-primary transition-colors"
         >
-          Skip for now — go to dashboard
+          Skip for now - go to dashboard
         </Link>
         {allDone && (
           <Link

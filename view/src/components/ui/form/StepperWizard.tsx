@@ -9,7 +9,7 @@ export interface WizardStep {
   label: string;
   icon: React.ReactNode;
   content: React.ReactNode;
-  /** Optional — mark step as complete (shows checkmark) */
+  /** Optional - mark step as complete (shows checkmark) */
   isComplete?: boolean;
 }
 

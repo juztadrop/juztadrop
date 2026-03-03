@@ -24,7 +24,20 @@ const DEFAULT_CAUSES = [
   { value: 'arts_culture', label: 'Arts & culture', sortOrder: 12 },
   { value: 'sports', label: 'Sports', sortOrder: 13 },
   { value: 'technology', label: 'Technology', sortOrder: 14 },
-  { value: 'other', label: 'Other', sortOrder: 15 },
+  { value: 'mental_health', label: 'Mental health', sortOrder: 15 },
+  { value: 'hunger_relief', label: 'Hunger & food security', sortOrder: 16 },
+  { value: 'disaster_relief', label: 'Disaster relief', sortOrder: 17 },
+  { value: 'youth_development', label: 'Youth development', sortOrder: 18 },
+  { value: 'literacy', label: 'Literacy', sortOrder: 19 },
+  { value: 'sanitation_hygiene', label: 'Sanitation & hygiene', sortOrder: 20 },
+  { value: 'wildlife_conservation', label: 'Wildlife conservation', sortOrder: 21 },
+  { value: 'climate_action', label: 'Climate action', sortOrder: 22 },
+  { value: 'community_development', label: 'Community development', sortOrder: 23 },
+  { value: 'vocational_training', label: 'Vocational training', sortOrder: 24 },
+  { value: 'human_rights', label: 'Human rights', sortOrder: 25 },
+  { value: 'heritage_conservation', label: 'Heritage conservation', sortOrder: 26 },
+  { value: 'waste_management', label: 'Waste management', sortOrder: 27 },
+  { value: 'other', label: 'Other', sortOrder: 28 },
 ];
 
 export async function runSeedCauses(): Promise<void> {

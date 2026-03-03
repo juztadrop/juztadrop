@@ -2,14 +2,16 @@
 
 import { Users, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { useVolunteersList, causeLabelForVolunteers } from '@/hooks/useVolunteersList';
+import { useCauses } from '@/hooks';
 import { VolunteerCard } from '@/components/volunteers/VolunteerCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
+import { VOLUNTEER_SKILLS } from '@/lib/constants';
 import { SearchableChipGroup } from '@/components/ui/form';
 import { FilterBadge } from '@/components/ui';
 import { cn } from '@/lib/common';
 
 export default function VolunteersPage() {
+  const { options: causeOptions } = useCauses();
   const {
     volunteers,
     total,
@@ -74,7 +76,7 @@ export default function VolunteersPage() {
           {causes.map((c) => (
             <FilterBadge
               key={c}
-              label={causeLabelForVolunteers(c)}
+              label={causeLabelForVolunteers(c, causeOptions)}
               onRemove={() => toggleCause(c)}
             />
           ))}
@@ -109,7 +111,7 @@ export default function VolunteersPage() {
           <div>
             <span className="mb-2 block text-xs font-medium text-foreground/60">Causes</span>
             <SearchableChipGroup
-              options={VOLUNTEER_CAUSES}
+              options={causeOptions}
               selected={causes}
               onChange={toggleCause}
               placeholder="Search causes…"

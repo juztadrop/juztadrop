@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Building2, Upload, FileText, MapPin, Mail, User, Globe, FileCheck } from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
-import { LOCATIONS, VOLUNTEER_CAUSES } from '@/lib/constants';
+import { LOCATIONS } from '@/lib/constants';
 import { cn } from '@/lib/common';
 import { FormPageSkeleton } from '@/components/skeletons';
 import {
@@ -15,7 +15,7 @@ import {
   ChipGroup,
   FormActions,
 } from '@/components/ui/form';
-import { useCreateOrganization, useOrganizationTypes } from '@/hooks';
+import { useCreateOrganization, useOrganizationTypes, useCauses } from '@/hooks';
 
 const CITY_OPTIONS = [
   { value: '', label: 'Select city' },
@@ -26,6 +26,7 @@ export default function CreateOrganisationPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
   const { options: orgTypeOptions, isLoading: orgTypesLoading } = useOrganizationTypes();
+  const { options: causeOptions } = useCauses();
   const { form, submitting, toggleCause, handleFileChange, handleSubmit, setForm } =
     useCreateOrganization();
 
@@ -98,7 +99,7 @@ export default function CreateOrganisationPage() {
           description="Which causes does your organisation work towards?"
           icon={<Globe className="h-5 w-5" />}
         >
-          <ChipGroup options={VOLUNTEER_CAUSES} selected={form.causes} onChange={toggleCause} />
+          <ChipGroup options={causeOptions} selected={form.causes} onChange={toggleCause} />
         </FormSection>
 
         <FormSection

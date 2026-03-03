@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { VOLUNTEER_CAUSES } from '@/lib/constants';
 import type { VolunteerCardData } from '@/components/volunteers/VolunteerCard';
+import type { CauseOption } from './useCauses';
 
-export function causeLabelForVolunteers(value: string): string {
-  return VOLUNTEER_CAUSES.find((c) => c.value === value)?.label ?? value;
+export function causeLabelForVolunteers(value: string, causeOptions?: CauseOption[]): string {
+  const options = causeOptions ?? VOLUNTEER_CAUSES;
+  return options.find((c) => c.value === value)?.label ?? value;
 }
 
 interface VolunteersResponse {

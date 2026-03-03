@@ -1,7 +1,8 @@
 'use client';
 
-import { VOLUNTEER_CAUSES, LOCATIONS } from '@/lib/constants';
+import { LOCATIONS } from '@/lib/constants';
 import { cn } from '@/lib/common';
+import type { CauseOption } from '@/hooks/useCauses';
 
 export interface OpportunitiesFiltersPanelProps {
   city: string;
@@ -14,6 +15,7 @@ export interface OpportunitiesFiltersPanelProps {
   setDateTo: (v: string) => void;
   causes: string[];
   toggleCause: (value: string) => void;
+  causeOptions: CauseOption[];
   activeFilterCount: number;
   clearAllFilters: () => void;
 }
@@ -29,6 +31,7 @@ export function OpportunitiesFiltersPanel({
   setDateTo,
   causes,
   toggleCause,
+  causeOptions,
   activeFilterCount,
   clearAllFilters,
 }: OpportunitiesFiltersPanelProps) {
@@ -140,7 +143,7 @@ export function OpportunitiesFiltersPanel({
       <div>
         <span className="mb-2 block text-xs font-medium text-foreground/60">Causes</span>
         <div className="flex flex-wrap gap-2">
-          {VOLUNTEER_CAUSES.map(({ value, label }) => (
+          {causeOptions.map(({ value, label }) => (
             <button
               key={value}
               type="button"

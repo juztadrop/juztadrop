@@ -73,7 +73,7 @@ export function SearchableChipGroup({
         </div>
       )}
 
-      {/* Selected chips — always visible at the top */}
+      {/* Selected chips - always visible at the top */}
       {selectedItems.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedItems.map(({ value, label }) => (
