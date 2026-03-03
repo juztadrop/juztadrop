@@ -20,3 +20,13 @@ export function formatDateRange(
   if (!end || String(start) === String(end)) return formatDateLong(start);
   return `${formatDateLong(start)} – ${formatDateLong(end)}`;
 }
+
+/** Time range for display (e.g. "10:00 – 12:00"). */
+export function formatTime(
+  start: string | null | undefined,
+  end: string | null | undefined
+): string {
+  if (!start && !end) return '';
+  if (!end) return start ?? '';
+  return `${start ?? '?'} – ${end}`;
+}

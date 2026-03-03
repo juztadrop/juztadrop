@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MapPin, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { VerifiedBadge } from '@/components/common/VerifiedBadge';
 import { cn } from '@/lib/common';
+import { formatDateRange, formatTime } from '@/lib/date';
 
 export interface OpportunityCardData {
   id: string;
@@ -20,24 +21,6 @@ export interface OpportunityCardData {
   causeCategoryNames: string[];
 }
 
-function formatDate(d: string | Date | null): string {
-  if (!d) return '';
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function formatDateRange(start?: string | Date | null, end?: string | Date | null): string {
-  if (!start && !end) return 'Ongoing';
-  if (!end || String(start) === String(end)) return formatDate(start ?? null);
-  return `${formatDate(start ?? null)} – ${formatDate(end ?? null)}`;
-}
-
-function formatTime(start?: string | null, end?: string | null): string {
-  if (!start && !end) return '';
-  if (!end) return start ?? '';
-  return `${start ?? '?'} – ${end}`;
-}
-
 function modeLabel(mode: string): string {
   const map: Record<string, string> = {
     onsite: 'Onsite',
@@ -47,7 +30,13 @@ function modeLabel(mode: string): string {
   return map[mode] ?? mode;
 }
 
-export function OpportunityCard({ opportunity, className }: { opportunity: OpportunityCardData; className?: string }) {
+export function OpportunityCard({
+  opportunity,
+  className,
+}: {
+  opportunity: OpportunityCardData;
+  className?: string;
+}) {
   const dateStr = formatDateRange(opportunity.startDate, opportunity.endDate);
   const timeStr = formatTime(opportunity.startTime, opportunity.endTime);
   const location = [opportunity.city, opportunity.state].filter(Boolean).join(', ');
@@ -68,9 +57,7 @@ export function OpportunityCard({ opportunity, className }: { opportunity: Oppor
       </div>
       <div className="mt-2 flex items-center gap-2">
         <span className="text-sm font-medium text-jad-primary">{opportunity.orgName}</span>
-        {opportunity.orgVerificationStatus === 'verified' && (
-          <VerifiedBadge />
-        )}
+        {opportunity.orgVerificationStatus === 'verified' && <VerifiedBadge />}
       </div>
       {opportunity.causeCategoryNames?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
