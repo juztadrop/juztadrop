@@ -187,7 +187,7 @@ export function LandingHero() {
               variants={imageReveal}
               initial="hidden"
               animate="visible"
-              className="relative w-[78%] aspect-[4/3] overflow-hidden rounded-3xl shadow-2xl shadow-jad-foreground/30 ring-8 ring-white/50"
+              className="relative w-[78%] aspect-[4/3] overflow-hidden rounded-3xl shadow-lg shadow-jad-foreground/30 ring-8 ring-white/50"
             >
               <Image
                 src="/images/hero-volunteers.png"
