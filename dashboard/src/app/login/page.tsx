@@ -55,14 +55,6 @@ function LoginPageContent() {
             />
           </div>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-foreground/70 hover:text-jad-primary transition-colors mb-6"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-
           <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
             Sign in
           </h1>
