@@ -1,7 +1,19 @@
 'use client';
 
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, Upload, FileText, MapPin, Mail, User, Globe, FileCheck } from 'lucide-react';
+import {
+  Building2,
+  Upload,
+  FileText,
+  MapPin,
+  Mail,
+  User,
+  Globe,
+  FileCheck,
+  ChevronDown,
+  Search,
+} from 'lucide-react';
 import { useAuth } from '@/lib/auth/use-auth';
 import { LOCATIONS } from '@/lib/constants';
 import { cn } from '@/lib/common';
@@ -14,13 +26,15 @@ import {
   FormSection,
   ChipGroup,
   FormActions,
+  StepperWizard,
 } from '@/components/ui/form';
-import { useCreateOrganization, useOrganizationTypes, useCauses } from '@/hooks';
+import type { WizardStep } from '@/components/ui/form';
+import { useCreateOrganization, useOrganizationTypes, useCauses, useClickOutside } from '@/hooks';
 
-const CITY_OPTIONS = [
-  { value: '', label: 'Select city' },
-  ...LOCATIONS.map((loc) => ({ value: loc, label: loc })),
-];
+const STEP_IDS = ['basic', 'causes', 'address', 'contact', 'about', 'documents'] as const;
+
+const CITY_DROPDOWN_MAX_HEIGHT = 280;
+const CITY_SEARCH_PLACEHOLDER = 'Search city…';
 
 export default function CreateOrganisationPage() {
   const router = useRouter();
@@ -29,6 +43,33 @@ export default function CreateOrganisationPage() {
   const { options: causeOptions } = useCauses();
   const { form, submitting, toggleCause, handleFileChange, handleSubmit, setForm } =
     useCreateOrganization();
+
+  const [activeStep, setActiveStep] = useState<(typeof STEP_IDS)[number]>('basic');
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const [citySearch, setCitySearch] = useState('');
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
+  const citySearchInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCityClickOutside = useCallback(() => {
+    setCityDropdownOpen(false);
+    setCitySearch('');
+  }, []);
+  useClickOutside(cityDropdownRef, cityDropdownOpen, handleCityClickOutside);
+
+  const filteredCities = useMemo(() => {
+    const q = citySearch.trim().toLowerCase();
+    if (!q) return ['', ...LOCATIONS];
+    return ['', ...LOCATIONS.filter((loc) => loc.toLowerCase().includes(q))];
+  }, [citySearch]);
+
+  useEffect(() => {
+    if (cityDropdownOpen) {
+      setCitySearch('');
+      setTimeout(() => citySearchInputRef.current?.focus(), 0);
+    }
+  }, [cityDropdownOpen]);
+
+  const cityLabel = form.city || 'Select city';
 
   if (!isReady || isLoading || !user) {
     return <FormPageSkeleton />;
@@ -39,23 +80,13 @@ export default function CreateOrganisationPage() {
     return null;
   }
 
-  return (
-    <div className="container">
-      <div className="flex items-center gap-4 mb-10">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-jad-mint text-jad-primary shadow-lg shadow-jad-primary/10">
-          <Building2 className="h-7 w-7" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-jad-foreground sm:text-3xl">
-            Register your organisation
-          </h1>
-          <p className="mt-1 text-sm text-foreground/70">
-            We&apos;ll verify your details before you can post opportunities.
-          </p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-8">
+  const steps: WizardStep[] = [
+    {
+      id: 'basic',
+      label: 'Basic',
+      icon: <Building2 className="h-5 w-5" />,
+      isComplete: !!form.orgName.trim(),
+      content: (
         <FormSection
           title="Basic information"
           description="Your organisation's legal and identity details"
@@ -93,7 +124,14 @@ export default function CreateOrganisationPage() {
             </FormField>
           </div>
         </FormSection>
-
+      ),
+    },
+    {
+      id: 'causes',
+      label: 'Causes',
+      icon: <Globe className="h-5 w-5" />,
+      isComplete: form.causes.length > 0,
+      content: (
         <FormSection
           title="Focus causes"
           description="Which causes does your organisation work towards?"
@@ -101,31 +139,100 @@ export default function CreateOrganisationPage() {
         >
           <ChipGroup options={causeOptions} selected={form.causes} onChange={toggleCause} />
         </FormSection>
-
+      ),
+    },
+    {
+      id: 'address',
+      label: 'Address',
+      icon: <MapPin className="h-5 w-5" />,
+      isComplete: !!form.address?.trim(),
+      content: (
         <FormSection
           title="Address"
           description="Where is your organisation located?"
           icon={<MapPin className="h-5 w-5" />}
         >
           <FormField label="Street address" htmlFor="address" required>
-            <FormInput
+            <FormTextarea
               id="address"
-              type="text"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               placeholder="Street address"
+              rows={3}
               required
             />
           </FormField>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="City" htmlFor="city">
-              <FormDropdown
-                id="city"
-                value={form.city}
-                onChange={(value) => setForm({ ...form, city: value })}
-                options={CITY_OPTIONS}
-                placeholder="Select city"
-              />
+              <div ref={cityDropdownRef} className="relative">
+                <button
+                  type="button"
+                  id="city"
+                  aria-haspopup="listbox"
+                  aria-expanded={cityDropdownOpen}
+                  onClick={() => setCityDropdownOpen((o) => !o)}
+                  className={cn(
+                    'flex w-full items-center justify-between rounded-xl border border-foreground/15 bg-white px-4 py-2.5 text-left text-sm',
+                    'focus:border-jad-primary focus:outline-none focus:ring-2 focus:ring-jad-primary/20',
+                    !form.city && 'text-foreground/50'
+                  )}
+                >
+                  <span className="truncate">{cityLabel}</span>
+                  <ChevronDown
+                    className={cn('h-5 w-5 shrink-0', cityDropdownOpen && 'rotate-180')}
+                  />
+                </button>
+                {cityDropdownOpen && (
+                  <div
+                    className="absolute left-0 top-full z-20 mt-1 w-full min-w-[12rem] overflow-hidden rounded-xl border border-foreground/15 bg-white shadow-lg"
+                    style={{ maxHeight: CITY_DROPDOWN_MAX_HEIGHT }}
+                  >
+                    <div className="sticky top-0 border-b border-foreground/10 bg-white p-2">
+                      <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 focus-within:border-neutral-300 focus-within:ring-0">
+                        <Search className="h-4 w-4 shrink-0 text-foreground/50" />
+                        <input
+                          ref={citySearchInputRef}
+                          type="text"
+                          value={citySearch}
+                          onChange={(e) => setCitySearch(e.target.value)}
+                          placeholder={CITY_SEARCH_PLACEHOLDER}
+                          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-jad-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-0"
+                          aria-label="Search city"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className="overflow-y-auto py-1"
+                      style={{ maxHeight: CITY_DROPDOWN_MAX_HEIGHT - 56 }}
+                      role="listbox"
+                    >
+                      {filteredCities.map((loc) => (
+                        <button
+                          key={loc || '__empty__'}
+                          type="button"
+                          role="option"
+                          aria-selected={form.city === loc}
+                          onClick={() => {
+                            setForm({ ...form, city: loc });
+                            setCityDropdownOpen(false);
+                          }}
+                          className={cn(
+                            'w-full px-4 py-2.5 text-left text-sm',
+                            form.city === loc
+                              ? 'bg-jad-mint/50 font-medium text-jad-foreground'
+                              : 'text-foreground hover:bg-foreground/5'
+                          )}
+                        >
+                          {loc || 'Select city'}
+                        </button>
+                      ))}
+                      {filteredCities.length === 0 && (
+                        <p className="px-4 py-3 text-sm text-foreground/50">No city matches</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </FormField>
             <FormField label="State" htmlFor="state">
               <FormInput
@@ -138,7 +245,14 @@ export default function CreateOrganisationPage() {
             </FormField>
           </div>
         </FormSection>
-
+      ),
+    },
+    {
+      id: 'contact',
+      label: 'Contact',
+      icon: <User className="h-5 w-5" />,
+      isComplete: !!(form.contactPersonName?.trim() && form.contactPersonEmail?.trim()),
+      content: (
         <FormSection
           title="Contact person"
           description="Primary contact for the organisation"
@@ -175,7 +289,14 @@ export default function CreateOrganisationPage() {
             />
           </FormField>
         </FormSection>
-
+      ),
+    },
+    {
+      id: 'about',
+      label: 'About',
+      icon: <FileText className="h-5 w-5" />,
+      isComplete: !!(form.description?.trim() || form.website?.trim()),
+      content: (
         <FormSection
           title="About your organisation"
           description="Share your mission and impact"
@@ -202,7 +323,14 @@ export default function CreateOrganisationPage() {
             />
           </FormField>
         </FormSection>
-
+      ),
+    },
+    {
+      id: 'documents',
+      label: 'Documents',
+      icon: <FileCheck className="h-5 w-5" />,
+      isComplete: !!(form.registrationDoc || form.proofDoc),
+      content: (
         <FormSection
           title="Documents"
           description="Verification documents (optional, max 1 MB each)"
@@ -212,7 +340,7 @@ export default function CreateOrganisationPage() {
             <FormField label="Registration certificate">
               <label
                 className={cn(
-                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 transition-all hover:border-jad-primary/30 hover:bg-jad-mint/20',
+                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 hover:border-jad-primary/30 hover:bg-jad-mint/20',
                   form.registrationDoc && 'border-jad-primary/40 bg-jad-mint/30'
                 )}
               >
@@ -231,7 +359,7 @@ export default function CreateOrganisationPage() {
             <FormField label="Proof of address">
               <label
                 className={cn(
-                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 transition-all hover:border-jad-primary/30 hover:bg-jad-mint/20',
+                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 hover:border-jad-primary/30 hover:bg-jad-mint/20',
                   form.proofDoc && 'border-jad-primary/40 bg-jad-mint/30'
                 )}
               >
@@ -249,14 +377,42 @@ export default function CreateOrganisationPage() {
             </FormField>
           </div>
         </FormSection>
+      ),
+    },
+  ];
 
-        <FormActions
-          submitLabel="Submit for verification"
-          secondaryLabel="Save draft"
-          secondaryHref="/dashboard"
-          loading={submitting}
-          disabled={!form.orgName || !form.contactPersonName || !form.contactPersonEmail}
+  return (
+    <div className="container">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-jad-mint text-jad-primary shadow-lg shadow-jad-primary/10">
+          <Building2 className="h-7 w-7" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-jad-foreground sm:text-3xl">
+            Register your organisation
+          </h1>
+          <p className="mt-1 text-sm text-foreground/70">
+            We&apos;ll verify your details before you can post opportunities.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <StepperWizard
+          steps={steps}
+          activeStep={activeStep}
+          onStepChange={(id) => setActiveStep(id as (typeof STEP_IDS)[number])}
         />
+
+        {activeStep === 'documents' && (
+          <FormActions
+            submitLabel="Submit for verification"
+            secondaryLabel="Save draft"
+            secondaryHref="/dashboard"
+            loading={submitting}
+            disabled={!form.orgName || !form.contactPersonName || !form.contactPersonEmail}
+          />
+        )}
       </form>
     </div>
   );
