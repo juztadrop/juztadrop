@@ -9,6 +9,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   suffixIcon?: LucideIcon;
   onPrefixClick?: () => void;
   onSuffixClick?: () => void;
+  wrapperClassName?: string;
 }
 
 const sizeConfig: Record<InputSize, { wrapper: string; input: string; icon: string }> = {
@@ -43,21 +44,23 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       onPrefixClick,
       onSuffixClick,
       className = '',
+      wrapperClassName = '',
       disabled,
       ...props
     },
     ref
   ) => {
     const sizes = sizeConfig[inputSize];
-
     return (
       <div
         className={[
-          'flex items-center w-full bg-input transition-all duration-200 max-w-sm',
+          'flex items-center w-full bg-input transition-all duration-200',
           'focus-within:bg-input/70',
           'hover:bg-input/80',
           disabled && 'opacity-50 pointer-events-none',
           sizes.wrapper,
+          className,
+          wrapperClassName,
         ]
           .filter(Boolean)
           .join(' ')}
@@ -74,7 +77,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             onClick={onPrefixClick}
           />
         )}
-
         <input
           ref={ref}
           disabled={disabled}
@@ -83,13 +85,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'text-foreground placeholder:text-muted-foreground',
             'disabled:cursor-not-allowed',
             sizes.input,
-            className,
           ]
             .filter(Boolean)
             .join(' ')}
           {...props}
         />
-
         {SuffixIcon && (
           <SuffixIcon
             className={[

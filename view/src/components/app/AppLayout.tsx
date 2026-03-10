@@ -45,7 +45,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <main className="flex-1 pt-14 sm:pt-16">
         <div className="flex min-h-screen flex-col">
-          <div className="flex flex-1 flex-col pb-16 pt-8">{children}</div>
+          <div className="pb-16 pt-8 w-full h-screen">{children}</div>
           <AppFooter />
         </div>
       </main>

@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/common';
+import { TextMorph } from 'torph/react';
 
 export interface VolunteerCardData {
   id: string;
@@ -35,7 +36,7 @@ function getInitials(name: string | null, email: string): string {
     }
     return name.slice(0, 2).toUpperCase();
   }
-  return email ? email.slice(0, 2).toUpperCase() : '?';
+  return email ? email.slice(0, 2).toUpperCase() : '';
 }
 
 export function VolunteerCard({
@@ -46,7 +47,7 @@ export function VolunteerCard({
   className?: string;
 }) {
   const initials = getInitials(volunteer.name, volunteer.email);
-  const displayName = volunteer.name || 'Volunteer';
+  const displayName = volunteer.name;
   const colorClass = AVATAR_COLORS[hashCode(volunteer.id) % AVATAR_COLORS.length];
   const topCause = volunteer.causes?.[0]?.replace(/_/g, ' ') ?? null;
 
@@ -68,7 +69,7 @@ export function VolunteerCard({
       <div className="min-w-0 w-full">
         <p className="truncate text-base font-semibold text-jad-foreground">{displayName}</p>
         {topCause && (
-          <p className="mt-0.5 truncate text-xs text-foreground/45 capitalize">{topCause}</p>
+          <TextMorph className="mt-0.5 truncate text-xs text-foreground/45">{topCause}</TextMorph>
         )}
       </div>
     </div>
