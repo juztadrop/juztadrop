@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart, User, Sparkles, Loader2 } from 'lucide-react';
+import { Heart, User, Sparkles, Loader2, CheckIcon, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth/use-auth';
 import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
@@ -15,24 +15,24 @@ import { useVolunteerOnboarding } from '@/hooks';
 import { Button, cn } from '@/lib/common';
 import { VolunteerCard } from '@/components/volunteers/VolunteerCard';
 import { Check } from 'lucide-react';
+import { TextMorph } from 'torph/react';
+import Link from 'next/link';
 
 function SaveIndicator({ status }: { status: string }) {
-  if (status === 'saving') {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-foreground/50">
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs text-foreground/50">
+      {status == 'saving' ? (
         <Loader2 className="h-3 w-3 animate-spin" />
-        Saving…
-      </span>
-    );
-  }
-  if (status === 'saved') {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-jad-primary">
-        <Check className="h-3 w-3" />
-        Saved
-      </span>
-    );
-  }
+      ) : (
+        <CheckIcon className="h-3 w-3 text-jad-primary" />
+      )}
+
+      <TextMorph className={`${status == 'saved' && 'text-jad-primary'}`}>
+        {status == 'saving' ? 'Saving…' : 'Saved'}
+      </TextMorph>
+    </span>
+  );
+
   return null;
 }
 
@@ -142,7 +142,7 @@ function CardBackground({
             {row.map((cardIndex) => (
               <div
                 key={cardIndex}
-                className={`border-1 border-black ${cardIndex === 10 ? 'bg-white' : 'bg-input'} h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden`}
+                className={`bg-input border-[1px] ${cardIndex === 10 ? 'bg-white border-border' : 'border-border/50'} h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden`}
               >
                 {cardIndex === 10 ? (
                   <ProfileCard
@@ -282,7 +282,19 @@ export default function VolunteerOnboardingPage() {
   return (
     <div className="flex w-full h-full fixed top-0 z-[10000]">
       <div className="w-full md:w-1/2 h-full bg-white flex flex-col overflow-y-auto">
-        <div className="flex flex-col gap-4 md:gap-5 w-full max-w-sm md:max-w-none mx-auto md:mx-0 px-8 py-10 md:px-[4.5rem] md:py-14">
+        <div className="w-full top-0 sticky  pt-10 md:px-[4.5rem] md:py-10">
+          <Link href="/dashboard">
+            <Button
+              variant="secondary"
+              size={'sm'}
+              className="flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back
+            </Button>
+          </Link>
+        </div>
+        <div className="flex flex-col gap-4 md:gap-5 w-full max-w-sm md:max-w-none mx-auto md:mx-0 pt-10 md:px-[4.5rem] md:py-14">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-jad-mint text-jad-primary shadow-sm">
               <Heart className="h-5 w-5" />

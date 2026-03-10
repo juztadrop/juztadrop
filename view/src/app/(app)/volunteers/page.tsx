@@ -134,7 +134,7 @@ export default function VolunteersPage() {
   const volunteersCount = useCountUp(total, 1200, 300);
 
   return (
-    <div className="container">
+    <div className="container max-w-[800px] w-full">
       <div className="mb-8 text-center">
         <div className="flex flex-col align-center justify-center">
           <motion.h1
