@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth/use-auth';
 import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
 import { FormPageSkeleton } from '@/components/skeletons';
-import { FormField, FormInput, FormSection, SearchableChipGroup } from '@/components/ui/form';
+import { FormField, FormSection, SearchableChipGroup } from '@/components/ui/form';
 import { StepperWizard } from '@/components/ui/form';
 import type { WizardStep } from '@/components/ui/form';
 import { useVolunteerOnboarding } from '@/hooks';
@@ -17,6 +17,7 @@ import { VolunteerCard } from '@/components/volunteers/VolunteerCard';
 import { Check } from 'lucide-react';
 import { TextMorph } from 'torph/react';
 import Link from 'next/link';
+import Input from '@/components/common/Input';
 
 const staggerContainer = {
   hidden: {},
@@ -272,7 +273,7 @@ export default function VolunteerOnboardingPage() {
               icon={<User className="h-5 w-5" />}
             >
               <FormField label="Full name" htmlFor="name" required>
-                <FormInput
+                <Input
                   id="name"
                   type="text"
                   value={form.name}

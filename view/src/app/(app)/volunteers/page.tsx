@@ -11,6 +11,7 @@ import { SearchableChipGroup } from '@/components/ui/form';
 import { FilterBadge } from '@/components/ui';
 import Input from '@/components/common/Input';
 import { cn } from '@/lib/common';
+import Link from 'next/link';
 
 const fadeUpSpring = {
   hidden: { opacity: 0, y: 12 },
@@ -290,7 +291,9 @@ export default function VolunteersPage() {
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
           {volunteers.map((v) => (
-            <VolunteerCard key={v.id} volunteer={v} />
+            <Link href={`/volunteers/` + v.id}>
+              <VolunteerCard key={v.id} volunteer={v} />
+            </Link>
           ))}
         </div>
       )}
