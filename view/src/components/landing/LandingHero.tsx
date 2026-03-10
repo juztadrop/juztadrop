@@ -193,7 +193,7 @@ export function LandingHero() {
                 src="/images/hero-volunteers.png"
                 alt="Volunteers making a difference in their community"
                 fill
-                className="object-cover transition-transform duration-500 hover:scale-105"
+                className="object-cover"
                 priority
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 40vw"
               />
