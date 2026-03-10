@@ -18,6 +18,55 @@ import { Check } from 'lucide-react';
 import { TextMorph } from 'torph/react';
 import Link from 'next/link';
 
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.07,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fadeUpSpring = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 420,
+      damping: 32,
+      mass: 0.8,
+    },
+  },
+};
+
+function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div variants={fadeUpSpring} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+function AnimatedFormSection({ stepId, children }: { stepId: string; children: React.ReactNode }) {
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={stepId}
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        exit="hidden"
+        className="flex flex-col gap-4"
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function SaveIndicator({ status }: { status: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-foreground/50">
@@ -26,8 +75,7 @@ function SaveIndicator({ status }: { status: string }) {
       ) : (
         <CheckIcon className="h-3 w-3 text-jad-primary" />
       )}
-
-      <TextMorph className={`${status == 'saved' && 'text-jad-primary'}`}>
+      <TextMorph className={`${status == 'idle' && 'text-jad-primary'}`}>
         {status == 'saving' ? 'Saving…' : 'Saved'}
       </TextMorph>
     </span>
@@ -77,10 +125,6 @@ function ProfileCard({
   userId: string;
   userEmail: string;
 }) {
-  const maxCauses = 6;
-  const maxSkills = 6;
-  const hasCausesOrSkills = causes.length > 0 || skills.length > 0;
-
   const volunteerData = {
     id: userId,
     name: name || null,
@@ -142,7 +186,9 @@ function CardBackground({
             {row.map((cardIndex) => (
               <div
                 key={cardIndex}
-                className={`bg-input border-[1px] ${cardIndex === 10 ? 'bg-white border-border' : 'border-border/50'} h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden`}
+                className={`border-[1px] h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden ${
+                  cardIndex === 10 ? 'bg-white border-border' : 'bg-input border-border/50'
+                }`}
               >
                 {cardIndex === 10 ? (
                   <ProfileCard
@@ -191,22 +237,24 @@ export default function VolunteerOnboardingPage() {
   };
 
   const NavigationButtons = ({ showNext = true }: { showNext?: boolean }) => (
-    <div className="flex flex-row gap-2 mt-4">
-      <Button
-        variant="secondary"
-        size="lg"
-        className="w-full"
-        onClick={goBack}
-        disabled={activeStep === stepOrder[0]}
-      >
-        Back
-      </Button>
-      {showNext && (
-        <Button variant="default" size="lg" className="w-full" onClick={goNext}>
-          {activeStep === stepOrder[stepOrder.length - 1] ? 'Finish' : 'Next'}
+    <StaggerItem>
+      <div className="flex flex-row gap-2 mt-4">
+        <Button
+          variant="secondary"
+          size="lg"
+          className="w-full"
+          onClick={goBack}
+          disabled={activeStep === stepOrder[0]}
+        >
+          Back
         </Button>
-      )}
-    </div>
+        {showNext && (
+          <Button variant="default" size="lg" className="w-full" onClick={goNext}>
+            {activeStep === stepOrder[stepOrder.length - 1] ? 'Finish' : 'Next'}
+          </Button>
+        )}
+      </div>
+    </StaggerItem>
   );
 
   const steps: WizardStep[] = [
@@ -216,22 +264,26 @@ export default function VolunteerOnboardingPage() {
       icon: <User className="h-5 w-5" />,
       isComplete: !!form.name.trim(),
       content: (
-        <FormSection
-          title="Basic info"
-          description="We'll use this to personalise your experience"
-          icon={<User className="h-5 w-5" />}
-        >
-          <FormField label="Full name" htmlFor="name" required>
-            <FormInput
-              id="name"
-              type="text"
-              value={form.name}
-              onChange={(e) => updateName(e.target.value)}
-              placeholder="Your name"
-            />
-          </FormField>
+        <AnimatedFormSection stepId="name">
+          <StaggerItem>
+            <FormSection
+              title="Basic info"
+              description="We'll use this to personalise your experience"
+              icon={<User className="h-5 w-5" />}
+            >
+              <FormField label="Full name" htmlFor="name" required>
+                <FormInput
+                  id="name"
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => updateName(e.target.value)}
+                  placeholder="Your name"
+                />
+              </FormField>
+            </FormSection>
+          </StaggerItem>
           <NavigationButtons />
-        </FormSection>
+        </AnimatedFormSection>
       ),
     },
     {
@@ -240,19 +292,23 @@ export default function VolunteerOnboardingPage() {
       icon: <Heart className="h-5 w-5" />,
       isComplete: form.causes.length > 0,
       content: (
-        <FormSection
-          title="Causes you care about"
-          description="Select all that resonate with you"
-          icon={<Heart className="h-5 w-5" />}
-        >
-          <SearchableChipGroup
-            options={VOLUNTEER_CAUSES}
-            selected={form.causes}
-            onChange={toggleCause}
-            placeholder="Search causes…"
-          />
+        <AnimatedFormSection stepId="causes">
+          <StaggerItem>
+            <FormSection
+              title="Causes you care about"
+              description="Select all that resonate with you"
+              icon={<Heart className="h-5 w-5" />}
+            >
+              <SearchableChipGroup
+                options={VOLUNTEER_CAUSES}
+                selected={form.causes}
+                onChange={toggleCause}
+                placeholder="Search causes…"
+              />
+            </FormSection>
+          </StaggerItem>
           <NavigationButtons />
-        </FormSection>
+        </AnimatedFormSection>
       ),
     },
     {
@@ -261,20 +317,24 @@ export default function VolunteerOnboardingPage() {
       icon: <Sparkles className="h-5 w-5" />,
       isComplete: form.skills.length > 0,
       content: (
-        <FormSection
-          title="Skills (optional)"
-          description="Add skills that could help organisations"
-          icon={<Sparkles className="h-5 w-5" />}
-        >
-          <SearchableChipGroup
-            options={VOLUNTEER_SKILLS.map((s) => ({ value: s, label: s }))}
-            selected={form.skills}
-            onChange={toggleSkill}
-            placeholder="Search skills…"
-            variant="mint"
-          />
+        <AnimatedFormSection stepId="skills">
+          <StaggerItem>
+            <FormSection
+              title="Skills (optional)"
+              description="Add skills that could help organisations"
+              icon={<Sparkles className="h-5 w-5" />}
+            >
+              <SearchableChipGroup
+                options={VOLUNTEER_SKILLS.map((s) => ({ value: s, label: s }))}
+                selected={form.skills}
+                onChange={toggleSkill}
+                placeholder="Search skills…"
+                variant="mint"
+              />
+            </FormSection>
+          </StaggerItem>
           <NavigationButtons showNext={false} />
-        </FormSection>
+        </AnimatedFormSection>
       ),
     },
   ];
@@ -282,7 +342,7 @@ export default function VolunteerOnboardingPage() {
   return (
     <div className="flex w-full h-full fixed top-0 z-[10000]">
       <div className="w-full md:w-1/2 h-full bg-white flex flex-col overflow-y-auto">
-        <div className="w-full top-0 sticky  pt-10 md:px-[4.5rem] md:py-10">
+        <div className="w-full top-0 sticky pt-10 md:px-[4.5rem] md:py-10">
           <Link href="/dashboard">
             <Button
               variant="secondary"
@@ -294,8 +354,13 @@ export default function VolunteerOnboardingPage() {
             </Button>
           </Link>
         </div>
-        <div className="flex flex-col gap-4 md:gap-5 w-full max-w-sm md:max-w-none mx-auto md:mx-0 pt-10 md:px-[4.5rem] md:py-14">
-          <div className="flex items-center gap-3">
+        <motion.div
+          className="flex flex-col gap-4 md:gap-5 w-full max-w-sm md:max-w-none mx-auto md:mx-0 pt-10 md:px-[4.5rem] md:py-14"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+        >
+          <StaggerItem className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-jad-mint text-jad-primary shadow-sm">
               <Heart className="h-5 w-5" />
             </div>
@@ -305,14 +370,16 @@ export default function VolunteerOnboardingPage() {
               </h1>
               <p className="text-xs text-foreground/60">Tell us about yourself</p>
             </div>
-          </div>
-          <StepperWizard
-            steps={steps}
-            activeStep={activeStep}
-            onStepChange={(id) => setActiveStep(id)}
-            headerExtra={<SaveIndicator status={saveStatus} />}
-          />
-        </div>
+          </StaggerItem>
+          <StaggerItem>
+            <StepperWizard
+              steps={steps}
+              activeStep={activeStep}
+              onStepChange={(id) => setActiveStep(id)}
+              headerExtra={<SaveIndicator status={saveStatus} />}
+            />
+          </StaggerItem>
+        </motion.div>
       </div>
       <CardBackground
         isZoomed={isZoomed}
