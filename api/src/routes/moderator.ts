@@ -96,8 +96,14 @@ export const moderatorRouter = new Elysia({ prefix: '/moderator', tags: ['modera
     '/users/:userId/ban',
     async ({ params, body }) => {
       const { userId } = params;
-      const { action, reason } = body;
+      const { action, reason, name } = body;
       const banned = action === 'ban';
+      if (!name || (typeof name === 'string' && name.trim() === '')) {
+        return new Response(
+          JSON.stringify({ error: 'Name (who performed the action) is required' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
       if (
         banned &&
         (reason === undefined || (typeof reason === 'string' && reason.trim() === ''))
@@ -107,7 +113,12 @@ export const moderatorRouter = new Elysia({ prefix: '/moderator', tags: ['modera
           headers: { 'Content-Type': 'application/json' },
         });
       }
-      const user = await userRepository.setBanStatus(userId, banned, reason?.trim() || undefined);
+      const user = await userRepository.setBanStatus(
+        userId,
+        banned,
+        reason?.trim() || undefined,
+        name.trim()
+      );
       if (!user) {
         return new Response(JSON.stringify({ error: 'User not found' }), {
           status: 404,
@@ -121,6 +132,7 @@ export const moderatorRouter = new Elysia({ prefix: '/moderator', tags: ['modera
       body: t.Object({
         action: t.Union([t.Literal('ban'), t.Literal('unban')]),
         reason: t.Optional(t.String()),
+        name: t.String(),
       }),
     }
   );

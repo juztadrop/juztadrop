@@ -185,9 +185,14 @@ export class UserRepository {
 
   /**
    * Set ban status for a user and append to ban history.
-   * Ban: reason required. Unban: reason optional.
+   * Ban: reason required. Unban: reason optional. actedByName is required to record who performed the action.
    */
-  async setBanStatus(userId: string, banned: boolean, reason?: string): Promise<User | null> {
+  async setBanStatus(
+    userId: string,
+    banned: boolean,
+    reason: string | undefined,
+    actedByName: string
+  ): Promise<User | null> {
     const user = await this.findById(userId);
     if (!user) return null;
 
@@ -195,6 +200,7 @@ export class UserRepository {
     const entry: BanHistoryEntry = {
       timestamp: new Date().toISOString(),
       action_type: banned ? 'banned' : 'unbanned',
+      name: actedByName.trim() || null,
       ...(reason && reason.trim() ? { reason: reason.trim() } : {}),
     };
 

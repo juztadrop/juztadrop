@@ -27,6 +27,8 @@ export type BanHistoryEntry = {
   timestamp: string; // ISO 8601
   action_type: 'banned' | 'unbanned';
   reason?: string;
+  /** Name of the moderator who performed the action. Optional for backwards compatibility. */
+  name?: string | null;
 };
 
 export const users = pgTable(
