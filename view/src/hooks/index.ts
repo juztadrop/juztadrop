@@ -1,3 +1,4 @@
+export { useVolunteerSteps } from './useVolunteerSteps';
 export { useVolunteerDetails } from './useVolunteerDetails';
 export { useClickOutside } from './useClickOutside';
 export { useOpportunityCarousel } from './useOpportunityCarousel';
