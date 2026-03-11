@@ -7,22 +7,23 @@ export function useVolunteerDetails(id: string) {
 
   useEffect(() => {
     if (!id) return;
-    setIsLoading(true);
-    setError(null);
-    fetch(`/api/volunteers/${id}`)
-      .then((res) => {
+
+    const fetchVolunteer = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/volunteers/${id}`);
         if (!res.ok) throw new Error('Volunteer not found');
-        return res.json();
-      })
-      .then((data) => {
+        const data = await res.json();
         setVolunteer(data);
-      })
-      .catch((err) => {
+      } catch (err: any) {
         setError(err.message ?? 'Something went wrong');
-      })
-      .finally(() => {
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    fetchVolunteer();
   }, [id]);
 
   return { volunteer, isLoading, error };
