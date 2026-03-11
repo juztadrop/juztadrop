@@ -1,6 +1,6 @@
 import { db, users } from '../db/index.js';
 import type { VolunteeringData } from '../db/schema.js';
-import { and, desc, eq, isNotNull, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 export interface User {
@@ -44,6 +44,16 @@ export interface VolunteerWithUser {
 export interface VolunteerFilters {
   causes?: string[];
   skills?: string[];
+  limit?: number;
+  offset?: number;
+}
+
+/** Filters for admin list-users API. All optional; default fetches all users. */
+export interface AdminUserListFilters {
+  genders?: Array<'male' | 'female' | 'other' | 'prefer_not_to_say'>;
+  isBanned?: boolean;
+  volunteeringInterests?: string[];
+  isActive?: boolean;
   limit?: number;
   offset?: number;
 }
@@ -166,6 +176,72 @@ export class UserRepository {
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
     };
+  }
+
+  async findAllWithFilters(
+    filters: AdminUserListFilters
+  ): Promise<{ items: User[]; total: number }> {
+    const {
+      genders,
+      isBanned,
+      volunteeringInterests = [],
+      isActive,
+      limit = 20,
+      offset = 0,
+    } = filters;
+
+    const conditions: ReturnType<typeof and>[] = [];
+
+    if (genders !== undefined && genders.length > 0) {
+      conditions.push(inArray(users.gender, genders));
+    }
+    if (isBanned !== undefined) {
+      conditions.push(eq(users.isBanned, isBanned));
+    }
+    if (isActive === true) {
+      conditions.push(isNull(users.deletedAt));
+    } else if (isActive === false) {
+      conditions.push(isNotNull(users.deletedAt));
+    }
+    if (volunteeringInterests.length > 0) {
+      const causesChecks = volunteeringInterests.map(
+        (c) => sql`(${users.volunteering}->'causes') @> ${JSON.stringify([c])}::jsonb`
+      );
+      conditions.push(sql`(${sql.join(causesChecks, sql` OR `)})`);
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : sql`true`;
+    const cappedLimit = Math.min(limit, 100);
+
+    const rows = await db
+      .select()
+      .from(users)
+      .where(whereClause)
+      .orderBy(desc(users.createdAt))
+      .limit(cappedLimit)
+      .offset(offset);
+
+    const countResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(users)
+      .where(whereClause);
+
+    const total = countResult[0]?.count ?? 0;
+    const items: User[] = rows.map((r) => ({
+      id: r.id,
+      email: r.email,
+      emailVerified: r.emailVerified,
+      name: r.name,
+      phone: r.phone,
+      gender: r.gender,
+      isBanned: r.isBanned,
+      volunteering: r.volunteering,
+      deletedAt: r.deletedAt,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    }));
+
+    return { items, total };
   }
 
   async findVolunteers(filters: VolunteerFilters): Promise<{ items: Volunteer[]; total: number }> {
