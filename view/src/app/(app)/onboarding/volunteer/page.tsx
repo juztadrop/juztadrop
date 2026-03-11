@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Heart, User, Sparkles, Loader2, CheckIcon, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth/use-auth';
-import { VOLUNTEER_CAUSES, VOLUNTEER_SKILLS } from '@/lib/constants';
+import { VOLUNTEER_SKILLS } from '@/lib/constants';
+import { useCauses } from '@/hooks';
 import { FormPageSkeleton } from '@/components/skeletons';
-import { FormField, FormInput, FormSection, SearchableChipGroup } from '@/components/ui/form';
+import { FormField, FormSection, SearchableChipGroup } from '@/components/ui/form';
 import { StepperWizard } from '@/components/ui/form';
 import type { WizardStep } from '@/components/ui/form';
 import { useVolunteerOnboarding } from '@/hooks';
@@ -17,6 +18,7 @@ import { VolunteerCard } from '@/components/volunteers/VolunteerCard';
 import { Check } from 'lucide-react';
 import { TextMorph } from 'torph/react';
 import Link from 'next/link';
+import Input from '@/components/common/Input';
 
 const staggerContainer = {
   hidden: {},
@@ -66,6 +68,11 @@ function AnimatedFormSection({ stepId, children }: { stepId: string; children: R
     </AnimatePresence>
   );
 }
+
+const VOLUNTEER_INTEREST_OPTIONS = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+];
 
 function SaveIndicator({ status }: { status: string }) {
   return (
@@ -213,8 +220,10 @@ function CardBackground({
 export default function VolunteerOnboardingPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, isReady } = useAuth();
-  const { form, saveStatus, updateName, toggleCause, toggleSkill } = useVolunteerOnboarding();
-  const [activeStep, setActiveStep] = useState('name');
+  const { options: causeOptions } = useCauses();
+  const { form, saveStatus, updateName, setIsInterest, toggleCause, toggleSkill } =
+    useVolunteerOnboarding();
+  const [activeStep, setActiveStep] = useState('interest');
 
   if (!isReady || isLoading || !user) return <FormPageSkeleton />;
 
@@ -259,6 +268,25 @@ export default function VolunteerOnboardingPage() {
 
   const steps: WizardStep[] = [
     {
+      id: 'interest',
+      label: 'Interest',
+      icon: <Heart className="h-5 w-5" />,
+      isComplete: true,
+      content: (
+        <FormSection
+          title="Are you interested in volunteering?"
+          description="Choose Yes to get matched with opportunities and apply. You can change this anytime from your profile."
+          icon={<Heart className="h-5 w-5" />}
+        >
+          <ChipGroup
+            options={VOLUNTEER_INTEREST_OPTIONS}
+            selected={form.isInterest ? ['yes'] : ['no']}
+            onChange={(value) => setIsInterest(value === 'yes')}
+          />
+        </FormSection>
+      ),
+    },
+    {
       id: 'name',
       label: 'Basic info',
       icon: <User className="h-5 w-5" />,
@@ -272,7 +300,7 @@ export default function VolunteerOnboardingPage() {
               icon={<User className="h-5 w-5" />}
             >
               <FormField label="Full name" htmlFor="name" required>
-                <FormInput
+                <Input
                   id="name"
                   type="text"
                   value={form.name}
