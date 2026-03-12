@@ -124,7 +124,7 @@ export type OrganizationStatus = (typeof ORGANIZATION_STATUS_VALUES)[number];
 
 export const organizationStatusEnum = pgEnum('organization_status', ORGANIZATION_STATUS_VALUES);
 
-/** Moderator actions. Status-changing actions use same values as ORGANIZATION_STATUS_VALUES where applicable; request_for_change (stays pending) and reinstate (→ verified) are action-only. */
+/** Moderator actions. Status-changing actions use same values as ORGANIZATION_STATUS_VALUES where applicable; request_for_change (stays pending) and reinstate (-> verified) are action-only. */
 export const ORGANIZATION_VERIFICATION_ACTION_VALUES = [
   'request_for_change',
   ...ORGANIZATION_STATUS_VALUES.filter((s) => s !== 'pending'),
