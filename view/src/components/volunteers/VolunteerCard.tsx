@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/common';
-import { TextMorph } from 'torph/react';
 
 export interface VolunteerCardData {
   id: string;
@@ -87,27 +86,6 @@ export function VolunteerCard({
           <p className="truncate text-base font-semibold text-jad-foreground">{displayName}</p>
         </div>
       </div>
-
-      {/*{hasTags && (
-        <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-          {causes.map((c) => (
-            <span
-              key={c}
-              className="rounded-full bg-jad-mint/50 px-2 py-0.5 text-[7px] font-medium text-jad-foreground"
-            >
-              {getCauseLabel(c, causeOptions)}
-            </span>
-          ))}
-          {skills.map((name) => (
-            <span
-              key={name}
-              className="rounded-full bg-foreground/10 px-2 py-0.5 text-[7px] text-foreground/80"
-            >
-              {name}
-            </span>
-          ))}
-        </div>
-      )}*/}
     </div>
   );
 }

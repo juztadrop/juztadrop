@@ -6,103 +6,14 @@ import { ChipGroup, FormField, FormSection, SearchableChipGroup } from '@/compon
 import type { WizardStep } from '@/components/ui/form';
 import { Button } from '@/lib/common';
 import Input from '@/components/common/Input';
-
-const staggerContainer = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.07,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const fadeUpSpring = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 420,
-      damping: 32,
-      mass: 0.8,
-    },
-  },
-};
+import { StaggerItem } from '@/components/common/StaggerItem';
+import { AnimatedFormSection } from '@/components/common/AnimatedFormSection';
+import { NavigationButtons } from '@/components/volunteers/onboarding/NavigationButtons';
 
 const VOLUNTEER_INTEREST_OPTIONS = [
   { value: 'yes', label: 'Yes' },
   { value: 'no', label: 'No' },
 ];
-
-const stepOrder = ['interest', 'name', 'causes', 'skills'];
-
-function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <motion.div variants={fadeUpSpring} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-function AnimatedFormSection({ stepId, children }: { stepId: string; children: React.ReactNode }) {
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={stepId}
-        variants={staggerContainer}
-        initial="hidden"
-        animate="show"
-        exit="hidden"
-        className="flex flex-col gap-4"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
-function NavigationButtons({
-  activeStep,
-  setActiveStep,
-  showNext = true,
-}: {
-  activeStep: string;
-  setActiveStep: (id: string) => void;
-  showNext?: boolean;
-}) {
-  const goNext = () => {
-    const currentIndex = stepOrder.indexOf(activeStep);
-    if (currentIndex < stepOrder.length - 1) setActiveStep(stepOrder[currentIndex + 1]);
-  };
-
-  const goBack = () => {
-    const currentIndex = stepOrder.indexOf(activeStep);
-    if (currentIndex > 0) setActiveStep(stepOrder[currentIndex - 1]);
-  };
-
-  return (
-    <StaggerItem>
-      <div className="flex flex-row gap-2 mt-4">
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          onClick={goBack}
-          disabled={activeStep === stepOrder[0]}
-        >
-          Back
-        </Button>
-        {showNext && (
-          <Button variant="default" size="lg" className="w-full" onClick={goNext}>
-            {activeStep === stepOrder[stepOrder.length - 1] ? 'Finish' : 'Next'}
-          </Button>
-        )}
-      </div>
-    </StaggerItem>
-  );
-}
 
 export function useVolunteerSteps({
   form,

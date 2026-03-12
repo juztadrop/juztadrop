@@ -6,10 +6,11 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Button } from '@/lib/common';
-import { Skeleton } from '@/components/ui/skeleton';
-import { causeLabelForVolunteers } from '@/hooks/useVolunteersList';
-import { cn } from '@/lib/common';
 import { useVolunteerDetails } from '@/hooks';
+import { CauseBadge } from '@/components/volunteers/CauseBadge';
+import { SkillBadge } from '@/components/volunteers/SkillBadge';
+import { DetailRow } from '@/components/volunteers/DetailRow';
+import LoadingSkeleton from '@/components/volunteers/LoadingSkeleton';
 
 const fadeUpSpring = {
   hidden: { opacity: 0, y: 16 },
@@ -24,66 +25,6 @@ const fadeUpSpring = {
     },
   }),
 };
-
-function CauseBadge({ cause }: { cause: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-jad-primary/20 bg-jad-mint/40 px-3 py-1 text-xs font-medium text-jad-primary">
-      <Heart className="h-3 w-3" aria-hidden />
-      {causeLabelForVolunteers(cause)}
-    </span>
-  );
-}
-
-function SkillBadge({ skill }: { skill: string }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-foreground/10 bg-white px-3 py-1 text-xs font-medium text-foreground/70 shadow-sm">
-      {skill}
-    </span>
-  );
-}
-
-function DetailRow({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-jad-mint/50">
-        <Icon className="h-4 w-4 text-jad-primary" aria-hidden />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs font-medium text-foreground/50">{label}</p>
-        <p className="mt-0.5 text-sm font-medium text-jad-foreground break-words">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function LoadingSkeleton() {
-  return (
-    <div
-      className="flex flex-col w-full max-w-[700px] gap-10"
-      aria-label="Loading volunteer"
-      role="status"
-    >
-      <div className="flex flex-row items-center gap-8">
-        <Skeleton className="w-[90px] h-[90px] rounded-full shrink-0" />
-        <div className="flex flex-col gap-3 flex-1">
-          <Skeleton className="h-8 w-48 rounded-xl" />
-          <Skeleton className="h-4 w-72 rounded-xl" />
-        </div>
-      </div>
-      <Skeleton className="h-24 w-full rounded-2xl" />
-      <div className="flex flex-wrap gap-2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-7 w-24 rounded-full" />
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-7 w-20 rounded-full" />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function VolunteerDetails() {
   const params = useParams();
