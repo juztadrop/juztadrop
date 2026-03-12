@@ -11,11 +11,13 @@ export function useVolunteerDetails(id: string) {
     const fetchVolunteer = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
-        const res = await fetch(`/api/volunteers/${id}`);
-        if (!res.ok) throw new Error('Volunteer not found');
+        const res = await fetch(`/api/volunteers/users/${id}`);
+
         const data = await res.json();
-        setVolunteer(data);
+        console.log(data);
+        // setVolunteer(data);
       } catch (err: any) {
         setError(err.message ?? 'Something went wrong');
       } finally {
