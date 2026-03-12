@@ -120,7 +120,7 @@ function AnimatedNumber({ value }: { value: number }) {
 
 export default function VolunteersPage() {
   const { options: causeOptions } = useCauses();
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = React.useRef<HTMLDivElement>(null);
   const {
     volunteers,
     total,

@@ -119,6 +119,7 @@ export default function VolunteerOnboardingPage() {
       </div>
       <CardBackground
         isZoomed={isZoomed}
+        isOnCausesOrSkills={activeStep == 'causes' || activeStep == 'skills'}
         name={form.name}
         causes={form.causes}
         skills={form.skills}

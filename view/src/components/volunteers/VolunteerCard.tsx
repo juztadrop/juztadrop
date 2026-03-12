@@ -70,7 +70,7 @@ export function VolunteerCard({
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-0 rounded-2xl p-6 text-center transition-all',
+        'flex flex-col items-center gap-0 rounded-2xl pt-5 pl-5 pr-5 text-center transition-all',
         className
       )}
     >
@@ -88,7 +88,7 @@ export function VolunteerCard({
         </div>
       </div>
 
-      {hasTags && (
+      {/*{hasTags && (
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">
           {causes.map((c) => (
             <span
@@ -107,7 +107,7 @@ export function VolunteerCard({
             </span>
           ))}
         </div>
-      )}
+      )}*/}
     </div>
   );
 }

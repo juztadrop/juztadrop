@@ -53,16 +53,97 @@ function ProfileCard({
   };
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden items-center justify-center px-2 py-2 gap-1.5">
-      <div className="w-full" style={{ transformOrigin: 'top center' }}>
-        <VolunteerCard volunteer={volunteerData} className="py-2 px-2" />
-      </div>
+    <div class="w-full h-full flex items-center justify-center">
+      <VolunteerCard volunteer={volunteerData} className="py-2 px-2" />
+    </div>
+  );
+}
+
+function FlippableMiddleCard({
+  isFlipped,
+  name,
+  causes,
+  skills,
+  userId,
+  userEmail,
+}: {
+  isFlipped: boolean;
+  name: string;
+  causes: string[];
+  skills: string[];
+  userId: string;
+  userEmail: string;
+}) {
+  return (
+    <div
+      style={{ perspective: '400px', perspectiveOrigin: '50% 50%' }}
+      className="h-[200px] w-[150px] shrink-0"
+    >
+      <motion.div
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.8 }}
+        style={{
+          transformStyle: 'preserve-3d',
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            position: 'absolute',
+            inset: 0,
+          }}
+          className="border-[1px] rounded-xl overflow-hidden bg-white border-border flex flex-col  shadow-sm"
+        >
+          <ProfileCard
+            name={name}
+            causes={causes}
+            skills={skills}
+            userId={userId}
+            userEmail={userEmail}
+          />
+        </div>
+
+        <div
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            position: 'absolute',
+            inset: 0,
+          }}
+          className="border-[1px] rounded-xl overflow-hidden bg-white border-border flex flex-col  shadow-sm items-center justify-center"
+        >
+          <div className="flex flex-wrap justify-center gap-1.5 p-2">
+            {causes.map((c) => (
+              <span
+                key={c}
+                className="rounded-full bg-jad-mint/50 px-2 py-0.5 text-[7px] font-medium text-jad-foreground"
+              >
+                {c}
+              </span>
+            ))}
+            {skills.map((s) => (
+              <span
+                key={s}
+                className="rounded-full bg-foreground/10 px-2 py-0.5 text-[7px] text-foreground/80"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }
 
 export function CardBackground({
   isZoomed,
+  isOnCausesOrSkills,
   name,
   causes,
   skills,
@@ -70,6 +151,7 @@ export function CardBackground({
   userEmail,
 }: {
   isZoomed: boolean;
+  isOnCausesOrSkills: boolean;
   name: string;
   causes: string[];
   skills: string[];
@@ -102,26 +184,26 @@ export function CardBackground({
               delay: 0.3 + rowIndex * 0.18,
             }}
           >
-            {row.map((cardIndex) => (
-              <div
-                key={cardIndex}
-                className={`border-[1px] h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden ${
-                  cardIndex === 10 ? 'bg-white border-border' : 'bg-input border-border/50'
-                }`}
-              >
-                {cardIndex === 10 ? (
-                  <ProfileCard
-                    name={name}
-                    causes={causes}
-                    skills={skills}
-                    userId={userId}
-                    userEmail={userEmail}
-                  />
-                ) : (
+            {row.map((cardIndex) =>
+              cardIndex === 10 ? (
+                <FlippableMiddleCard
+                  key={cardIndex}
+                  isFlipped={isOnCausesOrSkills}
+                  name={name}
+                  causes={causes}
+                  skills={skills}
+                  userId={userId}
+                  userEmail={userEmail}
+                />
+              ) : (
+                <div
+                  key={cardIndex}
+                  className="border-[1px] h-[200px] w-[150px] shrink-0 rounded-xl overflow-hidden bg-input border-border/50"
+                >
                   <ProfileCard name={''} causes={[]} skills={[]} userId={''} userEmail={''} />
-                )}
-              </div>
-            ))}
+                </div>
+              )
+            )}
           </motion.div>
         ))}
       </motion.div>
