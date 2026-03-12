@@ -1,5 +1,4 @@
 'use client';
-
 import * as React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,7 +12,6 @@ import { useVolunteerOnboarding } from '@/hooks';
 import { Button } from '@/lib/common';
 import Link from 'next/link';
 import { CardBackground } from '@/components/volunteers/onboarding/CardBackground';
-
 import { SaveIndicator } from '@/components/ui';
 import { StaggerItem } from '@/components/common/StaggerItem';
 
@@ -98,7 +96,7 @@ export default function VolunteerOnboardingPage() {
       </div>
       <CardBackground
         isZoomed={isZoomed}
-        isOnCausesOrSkills={activeStep == 'causes' || activeStep == 'skills'}
+        isOnCausesOrSkills={activeStep === 'causes' || activeStep === 'skills'}
         name={form.name}
         causes={form.causes}
         skills={form.skills}
