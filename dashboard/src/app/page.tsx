@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Card,
   CardContent,
@@ -11,7 +12,9 @@ import {
 import { useAuth } from '@/lib/auth';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { Building2, ChevronRight } from 'lucide-react';
 
 export default function DashboardPage() {
   const { moderator, isAuthenticated, isLoading, isReady, logout } = useAuth();
@@ -25,68 +28,43 @@ export default function DashboardPage() {
   if (!isReady || isLoading || !moderator) {
     return <DashboardSkeleton />;
   }
+
   return (
     <LayoutWithHeader
       headerProps={{
         nav: (
           <>
-            <Button variant="ghost" size="sm">
-              Dashboard
-            </Button>
             <Button variant="ghost" size="sm" onClick={logout}>
-              logout
+              Logout
             </Button>
           </>
         ),
       }}
     >
       <div className="container py-8">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome {moderator.user.name || moderator.user.email} to your admin dashboard
-            </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-                <CardDescription>Quick stats and insights</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Your dashboard content will appear here.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity</CardTitle>
-                <CardDescription>Recent activity and updates</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Activity feed will be displayed here.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>Manage your preferences</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Configuration options will be available here.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome, {moderator.user.name || moderator.user.email}
+          </p>
         </div>
+
+        <Link href="/organizations">
+          <Card className="transition-colors hover:bg-muted/50">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-muted/50">
+                  <Building2 className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Organizations</CardTitle>
+                  <CardDescription>Review and approve verification requests</CardDescription>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
     </LayoutWithHeader>
   );
