@@ -43,23 +43,7 @@ export default function OpportunityDetailPage() {
         Back to opportunities
       </Link>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <OpportunityDetailContent opportunity={opportunity} addressStr={addressStr} />
-        </div>
-        <div className="lg:col-span-1">
-          <OpportunityDetailSidebar
-            opportunity={opportunity}
-            myApplication={myApplication}
-            opportunityId={id}
-            canApply={canApply}
-            hasVolunteerProfile={hasVolunteerProfile}
-            isAuthenticated={isAuthenticated}
-            isNgoOwner={isNgoOwner}
-            onApplyClick={() => setShowApplyModal(true)}
-          />
-        </div>
-      </div>
+      <OpportunityDetailContent opportunity={opportunity} addressStr={addressStr} />
 
       {showApplyModal && (
         <ApplyModal

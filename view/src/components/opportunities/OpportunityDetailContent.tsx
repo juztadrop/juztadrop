@@ -14,7 +14,7 @@ export function OpportunityDetailContent({
   addressStr,
 }: OpportunityDetailContentProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-[800px] w-full m-auto">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
           {opportunity.title}

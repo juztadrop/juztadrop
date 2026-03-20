@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useNgo } from '@/contexts/NgoContext';
 import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/lib/api-proxy';
+import { uploadToStorage } from '@/lib/storage';
 
 export interface EditOrganizationForm {
   orgName: string;
@@ -17,7 +18,11 @@ export interface EditOrganizationForm {
   description: string;
   website: string;
   causes: string[];
+  registrationDoc: File | null;
+  proofDoc: File | null;
 }
+
+const MAX_FILE_SIZE = 1024 * 1024;
 
 export function useEditOrganization(orgId: string | undefined) {
   const router = useRouter();
@@ -35,6 +40,8 @@ export function useEditOrganization(orgId: string | undefined) {
     description: '',
     website: '',
     causes: [],
+    registrationDoc: null,
+    proofDoc: null,
   });
   const [loading, setLoading] = useState(!!orgId);
   const [submitting, setSubmitting] = useState(false);
@@ -80,6 +87,8 @@ export function useEditOrganization(orgId: string | undefined) {
             description: org.description ?? '',
             website: org.website ?? '',
             causes: Array.isArray(org.causes) ? org.causes : [],
+            registrationDoc: null,
+            proofDoc: null,
           });
         }
       })
@@ -98,12 +107,55 @@ export function useEditOrganization(orgId: string | undefined) {
     }));
   }, []);
 
+  const getFormatFromFile = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'pdf') return 'pdf';
+    if (['jpg', 'jpeg'].includes(ext)) return ext;
+    if (ext === 'png') return 'png';
+    return ext || 'bin';
+  };
+
+  const handleFileChange =
+    (field: 'registrationDoc' | 'proofDoc') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+          toast.error(
+            `File must be under 1 MB. ${file.name} is ${(file.size / 1024).toFixed(0)} KB.`
+          );
+          e.target.value = '';
+          return;
+        }
+        setForm((f) => ({ ...f, [field]: file }));
+      }
+    };
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!orgId) return;
       setSubmitting(true);
       try {
+        const documents: Array<{ documentType: string; documentAssetUrl: string; format: string }> =
+          [];
+
+        if (form.registrationDoc) {
+          const { assetKey } = await uploadToStorage(form.registrationDoc, 'documents');
+          documents.push({
+            documentType: 'registration_certificate',
+            documentAssetUrl: assetKey,
+            format: getFormatFromFile(form.registrationDoc),
+          });
+        }
+        if (form.proofDoc) {
+          const { assetKey } = await uploadToStorage(form.proofDoc, 'documents');
+          documents.push({
+            documentType: 'proof_of_address',
+            documentAssetUrl: assetKey,
+            format: getFormatFromFile(form.proofDoc),
+          });
+        }
+
         const res = await fetch(`/api/organizations/${orgId}`, {
           method: 'PATCH',
           credentials: 'include',
@@ -122,6 +174,7 @@ export function useEditOrganization(orgId: string | undefined) {
             city: form.city || null,
             state: form.state || null,
             country: 'India',
+            ...(documents.length > 0 && { documents }),
           }),
         });
         const data = await res.json().catch(() => ({}));
@@ -144,6 +197,7 @@ export function useEditOrganization(orgId: string | undefined) {
     loading,
     submitting,
     toggleCause,
+    handleFileChange,
     handleSubmit,
     orgFromContext: orgFromContextExtended,
   };

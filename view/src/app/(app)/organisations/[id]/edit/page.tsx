@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Search,
   ChevronLeft,
+  Upload,
+  FileCheck,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { LOCATIONS } from '@/lib/constants';
@@ -29,7 +31,7 @@ import type { WizardStep } from '@/components/ui/form';
 import { useEditOrganization, useOrganizationTypes, useCauses, useClickOutside } from '@/hooks';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const STEP_IDS = ['basic', 'causes', 'address', 'contact', 'about'] as const;
+const STEP_IDS = ['basic', 'causes', 'address', 'contact', 'about', 'documents'] as const;
 const CITY_DROPDOWN_MAX_HEIGHT = 280;
 const CITY_SEARCH_PLACEHOLDER = 'Search city…';
 
@@ -38,7 +40,7 @@ export default function EditOrganisationPage() {
   const orgId = params.id;
   const { options: orgTypeOptions, isLoading: orgTypesLoading } = useOrganizationTypes();
   const { options: causeOptions } = useCauses();
-  const { form, setForm, loading, submitting, toggleCause, handleSubmit } =
+  const { form, setForm, loading, submitting, toggleCause, handleFileChange, handleSubmit } =
     useEditOrganization(orgId);
 
   const [activeStep, setActiveStep] = useState<(typeof STEP_IDS)[number]>('basic');
@@ -333,6 +335,60 @@ export default function EditOrganisationPage() {
         </FormSection>
       ),
     },
+    {
+      id: 'documents',
+      label: 'Documents',
+      icon: <FileCheck className="h-5 w-5" />,
+      isComplete: !!(form.registrationDoc || form.proofDoc),
+      content: (
+        <FormSection
+          title="Documents"
+          description="Replace verification documents (optional, max 1 MB each)"
+          icon={<FileCheck className="h-5 w-5" />}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Registration certificate">
+              <label
+                className={cn(
+                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 hover:border-jad-primary/30 hover:bg-jad-mint/20',
+                  form.registrationDoc && 'border-jad-primary/40 bg-jad-mint/30'
+                )}
+              >
+                <Upload className="h-5 w-5 text-jad-primary shrink-0" />
+                <span className="text-sm text-foreground/80 truncate">
+                  {form.registrationDoc?.name ?? 'Choose PDF (max 1 MB)'}
+                </span>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileChange('registrationDoc')}
+                  className="hidden"
+                />
+              </label>
+            </FormField>
+            <FormField label="Proof of address">
+              <label
+                className={cn(
+                  'flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-foreground/15 bg-white px-4 py-4 hover:border-jad-primary/30 hover:bg-jad-mint/20',
+                  form.proofDoc && 'border-jad-primary/40 bg-jad-mint/30'
+                )}
+              >
+                <Upload className="h-5 w-5 text-jad-primary shrink-0" />
+                <span className="text-sm text-foreground/80 truncate">
+                  {form.proofDoc?.name ?? 'Choose PDF or image (max 1 MB)'}
+                </span>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange('proofDoc')}
+                  className="hidden"
+                />
+              </label>
+            </FormField>
+          </div>
+        </FormSection>
+      ),
+    },
   ];
 
   return (
@@ -362,7 +418,7 @@ export default function EditOrganisationPage() {
           onStepChange={(id) => setActiveStep(id as (typeof STEP_IDS)[number])}
         />
 
-        {activeStep === 'about' && (
+        {activeStep === 'documents' && (
           <FormActions
             submitLabel="Save changes"
             secondaryLabel="Cancel"
