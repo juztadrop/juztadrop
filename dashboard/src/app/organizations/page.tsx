@@ -128,6 +128,9 @@ export default function OrganizationsPage() {
                           <p className="font-medium truncate">{org.orgName}</p>
                           <p className="text-xs text-muted-foreground truncate">
                             {org.type ?? '—'} · {org.contactPersonEmail}
+                            {org.reviewRequestedAt && (
+                              <span className="ml-1 text-amber-600">· Review requested</span>
+                            )}
                           </p>
                         </div>
                       </div>

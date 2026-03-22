@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getBackendUrl, getBackendErrorHint } from '@/lib/api-proxy';
+import { getBackendUrl, getBackendErrorHint, getApiErrorMessage } from '@/lib/api-proxy';
 
 export const dynamic = 'force-dynamic';
+
+async function parseBackendBody(res: Response): Promise<unknown> {
+  const text = await res.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return { error: text.trim() || 'Request failed' };
+  }
+}
 
 /** Proxy moderator API calls to backend with session cookie. */
 export async function GET(
@@ -26,9 +36,15 @@ export async function GET(
       headers: { Cookie: `sessionToken=${token}` },
       cache: 'no-store',
     });
-    const data = await res.json().catch(() => ({}));
+    const data = await parseBackendBody(res);
     if (!res.ok) {
-      return NextResponse.json(data, { status: res.status });
+      const message = getApiErrorMessage(data, 'Request failed');
+      return NextResponse.json(
+        typeof data === 'object' && data !== null && !Array.isArray(data)
+          ? { ...data, error: message }
+          : { error: message },
+        { status: res.status }
+      );
     }
     return NextResponse.json(data);
   } catch (error) {
@@ -65,9 +81,15 @@ export async function PATCH(
       body: JSON.stringify(body),
       cache: 'no-store',
     });
-    const data = await res.json().catch(() => ({}));
+    const data = await parseBackendBody(res);
     if (!res.ok) {
-      return NextResponse.json(data, { status: res.status });
+      const message = getApiErrorMessage(data, 'Request failed');
+      return NextResponse.json(
+        typeof data === 'object' && data !== null && !Array.isArray(data)
+          ? { ...data, error: message }
+          : { error: message },
+        { status: res.status }
+      );
     }
     return NextResponse.json(data);
   } catch (error) {

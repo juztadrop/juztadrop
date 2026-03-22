@@ -6,6 +6,7 @@ import {
   generateTestEmail,
   cleanupTestData,
 } from '../helpers/test-utils';
+import { unwrapSuccessEnvelope } from '../helpers/test-helpers';
 
 /**
  * End-to-End Tests for Authentication System
@@ -72,7 +73,7 @@ describe('Authentication E2E Tests', () => {
     it('should respond to health check', async () => {
       const response = await fetch(`${API_URL}/health`);
       expect(response.ok).toBe(true);
-      const data = await response.json();
+      const data = unwrapSuccessEnvelope(await response.json());
       expect(data).toHaveProperty('status');
     });
   });
@@ -86,7 +87,7 @@ describe('Authentication E2E Tests', () => {
       });
 
       expect(response.ok).toBe(true);
-      const data = await response.json();
+      const data = unwrapSuccessEnvelope(await response.json());
       expect(data).toHaveProperty('message');
       expect(data.message).toContain('OTP');
 
@@ -201,7 +202,7 @@ describe('Authentication E2E Tests', () => {
         );
       }
 
-      const data = await response.json();
+      const data = unwrapSuccessEnvelope(await response.json());
       expect(data).toHaveProperty('user');
       expect(data.user).toHaveProperty('email', testEmail.toLowerCase());
       expect(data.user).toHaveProperty('emailVerified', true);
@@ -318,7 +319,7 @@ describe('Authentication E2E Tests', () => {
       });
 
       expect(response.ok).toBe(true);
-      const data = await response.json();
+      const data = unwrapSuccessEnvelope(await response.json());
       expect(data).toHaveProperty('user');
       expect(data.user).toHaveProperty('email', testEmail.toLowerCase());
     });
@@ -358,7 +359,7 @@ describe('Authentication E2E Tests', () => {
       });
 
       expect(response.ok).toBe(true);
-      const data = await response.json();
+      const data = unwrapSuccessEnvelope(await response.json());
       expect(data).toHaveProperty('message');
 
       // Verify session is deleted
@@ -442,7 +443,7 @@ describe('Authentication E2E Tests', () => {
         );
       }
 
-      const data = await verifyResponse.json();
+      const data = unwrapSuccessEnvelope(await verifyResponse.json());
       expect(data).toHaveProperty('isNewUser', true);
       expect(data).toHaveProperty('user');
 

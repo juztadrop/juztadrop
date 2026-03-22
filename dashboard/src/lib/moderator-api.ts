@@ -1,3 +1,5 @@
+import { getApiErrorMessage } from '@/lib/api-proxy';
+
 const MODERATOR_API = '/api/moderator';
 
 export type OrgVerificationStatus = 'pending' | 'verified' | 'rejected' | 'suspended';
@@ -27,6 +29,7 @@ export interface Organization {
   verificationStatus: string;
   isCsrEligible?: boolean;
   isFcraRegistered?: boolean;
+  reviewRequestedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,6 +47,13 @@ export interface VerificationHistoryEntry {
   createdAt: string;
 }
 
+function unwrapSuccessBody(body: unknown): unknown {
+  if (body == null || typeof body !== 'object') return body;
+  const o = body as Record<string, unknown>;
+  if (o.success === true && 'data' in o) return o.data;
+  return body;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${MODERATOR_API}/${path}`, {
     ...options,
@@ -52,10 +62,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const msg = (data as { error?: string })?.error || res.statusText;
+    const msg = getApiErrorMessage(data, res.statusText);
     throw new Error(msg);
   }
-  return data as T;
+  return unwrapSuccessBody(data) as T;
 }
 
 export const moderatorApi = {

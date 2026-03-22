@@ -14,6 +14,7 @@ import {
   StorageNotFoundError,
   StorageUploadError,
 } from '../utils/errors.js';
+import { logger } from '../utils/logger.js';
 
 const MIME_TO_EXT: Record<string, string> = {
   'image/jpeg': 'jpeg',
@@ -39,6 +40,10 @@ export class StorageService {
       const url = process.env.SUPABASE_URL;
       const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
       if (!url || !key) {
+        logger.error(
+          { hasUrl: Boolean(url), hasServiceRoleKey: Boolean(key) },
+          'Storage is misconfigured: SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY missing'
+        );
         throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
       }
       this.client = createClient(url, key);
@@ -52,10 +57,7 @@ export class StorageService {
     }
   }
 
-  private validateFile(
-    file: { type: string; size: number },
-    fileClass: FileClass
-  ): void {
+  private validateFile(file: { type: string; size: number }, fileClass: FileClass): void {
     const config = FILE_CLASSES[fileClass];
     if (!(config.allowedTypes as readonly string[]).includes(file.type)) {
       throw new InvalidFileTypeError(fileClass, file.type, config.allowedTypes);
@@ -88,20 +90,28 @@ export class StorageService {
 
     const client = this.getClient();
     const buffer = await file.arrayBuffer();
-    const { data, error } = await client.storage
-      .from(BUCKET_NAME)
-      .upload(assetKey, buffer, {
-        contentType: file.type,
-        upsert: true,
-      });
+    const { data, error } = await client.storage.from(BUCKET_NAME).upload(assetKey, buffer, {
+      contentType: file.type,
+      upsert: true,
+    });
 
     if (error) {
+      logger.error(
+        {
+          err: error,
+          fileClass,
+          operation: 'upload',
+          assetKey,
+          bucket: BUCKET_NAME,
+          contentType: file.type,
+          sizeBytes: buffer.byteLength,
+        },
+        'Supabase storage upload failed'
+      );
       throw new StorageUploadError(fileClass, 'upload', error.message);
     }
 
-    const { data: urlData } = client.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(data.path);
+    const { data: urlData } = client.storage.from(BUCKET_NAME).getPublicUrl(data.path);
 
     return {
       url: urlData.publicUrl,
@@ -113,9 +123,7 @@ export class StorageService {
     const path = this.sanitizePath(assetKey);
     const client = this.getClient();
 
-    const { data: urlData } = client.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(path);
+    const { data: urlData } = client.storage.from(BUCKET_NAME).getPublicUrl(path);
 
     return {
       url: urlData.publicUrl,
@@ -134,20 +142,28 @@ export class StorageService {
 
     const client = this.getClient();
     const buffer = await file.arrayBuffer();
-    const { data, error } = await client.storage
-      .from(BUCKET_NAME)
-      .upload(path, buffer, {
-        contentType: file.type,
-        upsert: true,
-      });
+    const { data, error } = await client.storage.from(BUCKET_NAME).upload(path, buffer, {
+      contentType: file.type,
+      upsert: true,
+    });
 
     if (error) {
+      logger.error(
+        {
+          err: error,
+          fileClass,
+          operation: 'replace',
+          assetKey: path,
+          bucket: BUCKET_NAME,
+          contentType: file.type,
+          sizeBytes: buffer.byteLength,
+        },
+        'Supabase storage replace failed'
+      );
       throw new StorageUploadError(fileClass, 'replace', error.message);
     }
 
-    const { data: urlData } = client.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(data.path);
+    const { data: urlData } = client.storage.from(BUCKET_NAME).getPublicUrl(data.path);
 
     return {
       url: urlData.publicUrl,
@@ -162,7 +178,18 @@ export class StorageService {
     const { error } = await client.storage.from(BUCKET_NAME).remove([path]);
 
     if (error) {
-      throw new StorageUploadError(path.split('/')[0], 'delete', error.message);
+      const fileClass = path.split('/')[0];
+      logger.error(
+        {
+          err: error,
+          fileClass,
+          operation: 'delete',
+          assetKey: path,
+          bucket: BUCKET_NAME,
+        },
+        'Supabase storage delete failed'
+      );
+      throw new StorageUploadError(fileClass, 'delete', error.message);
     }
   }
 }

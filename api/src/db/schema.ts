@@ -224,11 +224,16 @@ export const organizations = pgTable(
     isCsrEligible: boolean('is_csr_eligible').notNull().default(false),
     isFcraRegistered: boolean('is_fcra_registered').notNull().default(false),
     deletedAt: timestamp('deleted_at'),
+    /** Set when org (pending) requests review again after making changes post request_for_change. */
+    reviewRequestedAt: timestamp('review_requested_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
   (table) => ({
     createdByIdx: index('organizations_created_by_idx').on(table.createdBy),
+    reviewRequestedAtIdx: index('organizations_review_requested_at_idx').on(
+      table.reviewRequestedAt
+    ),
     verificationStatusIdx: index('organizations_verification_status_idx').on(
       table.verificationStatus
     ),

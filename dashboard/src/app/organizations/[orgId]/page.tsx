@@ -185,9 +185,14 @@ export default function OrganizationDetailPage() {
             </div>
             <div>
               <h1 className="text-xl font-semibold">{org.orgName}</h1>
-              <div className="mt-1 flex items-center gap-2">
+              <div className="mt-1 flex flex-wrap items-center gap-2">
                 <StatusBadge status={org.verificationStatus} />
                 <span className="text-sm text-muted-foreground">{org.type ?? '—'}</span>
+                {org.reviewRequestedAt && (
+                  <span className="text-xs text-amber-600">
+                    Review requested {new Date(org.reviewRequestedAt).toLocaleDateString()}
+                  </span>
+                )}
               </div>
             </div>
           </div>

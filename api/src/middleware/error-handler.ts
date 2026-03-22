@@ -12,6 +12,7 @@ import {
   StorageUploadError,
 } from '../utils/errors';
 import { errorResponse } from '../utils/response';
+import { logger } from '../utils/logger';
 
 export const errorHandler = new Elysia().onError(({ error, code, set }) => {
   // Set content type to JSON
@@ -43,6 +44,15 @@ export const errorHandler = new Elysia().onError(({ error, code, set }) => {
     return errorResponse(error.message, 'INVALID_FILE_CLASS');
   }
   if (error instanceof InvalidFileTypeError) {
+    logger.warn(
+      {
+        code: 'INVALID_FILE_TYPE',
+        fileClass: error.fileClass,
+        providedType: error.providedType,
+        allowedTypes: error.allowedTypes,
+      },
+      'Storage request rejected: invalid file type'
+    );
     set.status = 400;
     return errorResponse(error.message, 'INVALID_FILE_TYPE', {
       fileClass: error.fileClass,
@@ -51,6 +61,15 @@ export const errorHandler = new Elysia().onError(({ error, code, set }) => {
     });
   }
   if (error instanceof FileTooLargeError) {
+    logger.warn(
+      {
+        code: 'FILE_TOO_LARGE',
+        fileClass: error.fileClass,
+        maxSizeMb: error.maxSizeMb,
+        actualSizeBytes: error.actualSizeBytes,
+      },
+      'Storage request rejected: file too large'
+    );
     set.status = 400;
     return errorResponse(error.message, 'FILE_TOO_LARGE', {
       fileClass: error.fileClass,
@@ -63,6 +82,16 @@ export const errorHandler = new Elysia().onError(({ error, code, set }) => {
     return errorResponse(error.message, 'STORAGE_NOT_FOUND');
   }
   if (error instanceof StorageUploadError) {
+    logger.error(
+      {
+        err: error,
+        code: 'STORAGE_UPLOAD_ERROR',
+        fileClass: error.fileClass,
+        operation: error.operation,
+        message: error.message,
+      },
+      'Storage upload operation failed (returning 502 to client)'
+    );
     set.status = 502;
     return errorResponse(error.message, 'STORAGE_UPLOAD_ERROR', {
       fileClass: error.fileClass,
@@ -78,11 +107,16 @@ export const errorHandler = new Elysia().onError(({ error, code, set }) => {
   if (code === 'VALIDATION') {
     set.status = 400;
     const validationError = error as any;
-    return errorResponse(
-      validationError.message || 'Validation error',
-      'VALIDATION_ERROR',
-      validationError.validator?.Errors
+    const msg = validationError.message || 'Validation error';
+    logger.warn(
+      {
+        code: 'VALIDATION_ERROR',
+        message: msg,
+        validatorErrors: validationError.validator?.Errors,
+      },
+      'Request validation failed'
     );
+    return errorResponse(msg, 'VALIDATION_ERROR', validationError.validator?.Errors);
   }
 
   if (code === 'NOT_FOUND') {
