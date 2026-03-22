@@ -2,16 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle, LayoutWithHeader, Button } from '@/lib/common';
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@/lib/common';
 import { useAuth } from '@/lib/auth';
-import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import {
   moderatorApi,
   type OrgVerificationAction,
-  type Organization,
   type VerificationHistoryEntry,
 } from '@/lib/moderator-api';
 import {
@@ -51,7 +49,7 @@ const ALLOWED_ACTIONS: Partial<Record<string, OrgVerificationAction[]>> = {
 };
 
 function DataRow({ label, value }: { label: string; value: string | null | undefined }) {
-  const v = value?.trim() || '—';
+  const v = value?.trim() || '-';
   return (
     <div className="grid grid-cols-[minmax(0,8rem)_1fr] gap-2 py-1.5 text-sm">
       <span className="text-muted-foreground">{label}</span>
@@ -78,18 +76,13 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function OrganizationDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const orgId = params?.orgId as string;
-  const { moderator, isAuthenticated, isLoading, isReady, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [actionModal, setActionModal] = useState<{
     action: OrgVerificationAction;
     description: string;
   } | null>(null);
-
-  useEffect(() => {
-    if (isReady && !isAuthenticated) router.replace(`/login?redirect=/organizations/${orgId}`);
-  }, [isReady, isAuthenticated, router, orgId]);
 
   const { data: orgData, isLoading: orgLoading } = useQuery({
     queryKey: ['moderator', 'organization', orgId],
@@ -145,49 +138,36 @@ export default function OrganizationDetailPage() {
     });
   };
 
-  if (!isReady || isLoading || !moderator) {
-    return <DashboardSkeleton />;
-  }
-
   if (orgLoading || !org) {
     return (
-      <LayoutWithHeader headerProps={{ nav: null }}>
-        <div className="container py-8">
-          <p className="text-muted-foreground">Loading…</p>
-        </div>
-      </LayoutWithHeader>
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </div>
     );
   }
 
   return (
-    <LayoutWithHeader
-      headerProps={{
-        nav: (
-          <>
-            <Link href="/organizations">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                Back
-              </Button>
-            </Link>
-            <Button variant="ghost" size="sm" onClick={logout}>
-              Logout
+    <>
+      <div className="space-y-6">
+        <div>
+          <Link href="/organizations">
+            <Button variant="ghost" size="sm" className="-ml-2 mb-2">
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              Organizations
             </Button>
-          </>
-        ),
-      }}
-    >
-      <div className="container py-6 space-y-6">
+          </Link>
+        </div>
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-muted/50">
               <Building2 className="h-6 w-6 text-muted-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold">{org.orgName}</h1>
+              <h1 className="text-xl font-semibold text-jad-foreground">{org.orgName}</h1>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <StatusBadge status={org.verificationStatus} />
-                <span className="text-sm text-muted-foreground">{org.type ?? '—'}</span>
+                <span className="text-sm text-muted-foreground">{org.type ?? '-'}</span>
                 {org.reviewRequestedAt && (
                   <span className="text-xs text-amber-600">
                     Review requested {new Date(org.reviewRequestedAt).toLocaleDateString()}
@@ -325,7 +305,7 @@ export default function OrganizationDetailPage() {
           </Card>
         </div>
       )}
-    </LayoutWithHeader>
+    </>
   );
 }
 

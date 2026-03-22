@@ -7,9 +7,9 @@
 #   API_BASE_URL=http://127.0.0.1:3001 MODERATOR_SEED_EMAIL=you@example.com ./scripts/seed-admin-dev.sh
 #
 # Env (optional unless X_AUTH_ID missing from api/.env):
-#   API_BASE_URL       — default http://localhost:3001
-#   MODERATOR_SEED_EMAIL — email for the new moderator user; default admin@justadrop.local
-#   X_AUTH_ID          — must equal the API process X_AUTH_ID (loaded from api/.env if unset)
+#   API_BASE_URL       - default http://localhost:3001
+#   MODERATOR_SEED_EMAIL - email for the new moderator user; default admin@justadrop.local
+#   X_AUTH_ID          - must equal the API process X_AUTH_ID (loaded from api/.env if unset)
 
 set -euo pipefail
 
