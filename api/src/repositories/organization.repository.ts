@@ -29,6 +29,7 @@ export interface Organization {
   state: string | null;
   country: string | null;
   verificationStatus: string;
+  reviewRequestedAt?: Date | null;
   isCsrEligible?: boolean;
   isFcraRegistered?: boolean;
   createdAt: Date;
@@ -153,12 +154,16 @@ export class OrganizationRepository {
     const whereClause = and(...conditions);
 
     const [items, countResult] = await Promise.all([
-      db.query.organizations.findMany({
-        where: whereClause,
-        orderBy: desc(organizations.createdAt),
-        limit: filters.limit,
-        offset: filters.offset,
-      }),
+      db
+        .select()
+        .from(organizations)
+        .where(whereClause)
+        .orderBy(
+          sql`${organizations.reviewRequestedAt} desc nulls last`,
+          desc(organizations.createdAt)
+        )
+        .limit(filters.limit)
+        .offset(filters.offset),
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(organizations)
@@ -166,7 +171,28 @@ export class OrganizationRepository {
     ]);
 
     const total = countResult[0]?.count ?? 0;
-    return { items: items.map((org) => this.mapRow(org)), total };
+    return {
+      items: items.map((row) => this.mapRow(row as typeof organizations.$inferSelect)),
+      total,
+    };
+  }
+
+  /** Sets reviewRequestedAt = now() when org is pending. Used when org requests review again after changes. */
+  async requestReview(id: string): Promise<Organization | null> {
+    const org = await db.query.organizations.findFirst({
+      where: eq(organizations.id, id),
+    });
+    if (!org || org.verificationStatus !== 'pending') return null;
+    const [updated] = await db
+      .update(organizations)
+      .set({
+        reviewRequestedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(organizations.id, id))
+      .returning();
+    if (!updated) return null;
+    return this.mapRow(updated);
   }
 
   private mapRow(org: typeof organizations.$inferSelect): Organization {
@@ -187,6 +213,7 @@ export class OrganizationRepository {
       state: org.state,
       country: org.country,
       verificationStatus: org.verificationStatus,
+      reviewRequestedAt: org.reviewRequestedAt ?? undefined,
       isCsrEligible: org.isCsrEligible,
       isFcraRegistered: org.isFcraRegistered,
       createdAt: org.createdAt,

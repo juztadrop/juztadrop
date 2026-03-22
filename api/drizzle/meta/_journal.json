@@ -64,6 +64,13 @@
       "when": 1773324418984,
       "tag": "0008_groovy_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773403278614,
+      "tag": "0009_wakeful_lethal_legion",
+      "breakpoints": true
     }
   ]
 }

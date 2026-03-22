@@ -92,6 +92,19 @@ export const organizationsRouter = new Elysia({ prefix: '/organizations', tags: 
       }),
     }
   )
+  .post(
+    '/:id/request-review',
+    async (ctx: any) => {
+      const { userId } = ctx;
+      const { id } = ctx.params;
+      const hasAccess = await organizationRepository.hasManageAccess(id, userId);
+      if (!hasAccess) throw new ForbiddenError('You do not have permission to request review');
+      const org = await organizationRepository.requestReview(id);
+      if (!org) throw new NotFoundError('Organization not found or not pending');
+      return { organization: org };
+    },
+    { params: t.Object({ id: t.String() }) }
+  )
   .get(
     '/:id',
     async (ctx: any) => {

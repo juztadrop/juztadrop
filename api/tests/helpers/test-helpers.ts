@@ -2,6 +2,20 @@
  * Test Helpers for better error reporting
  */
 
+/** 2xx responses use `{ success: true, data }` from responseEnvelope; unwrap for payload assertions. */
+export function unwrapSuccessEnvelope<T = unknown>(body: unknown): T {
+  if (
+    body !== null &&
+    typeof body === 'object' &&
+    'success' in body &&
+    (body as { success: unknown }).success === true &&
+    'data' in body
+  ) {
+    return (body as { data: T }).data;
+  }
+  return body as T;
+}
+
 export async function expectErrorResponse(
   response: Response,
   expectedStatus: number,

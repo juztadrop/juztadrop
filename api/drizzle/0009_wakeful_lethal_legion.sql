@@ -1,0 +1,2 @@
+ALTER TABLE "organizations" ADD COLUMN "review_requested_at" timestamp;--> statement-breakpoint
+CREATE INDEX "organizations_review_requested_at_idx" ON "organizations" USING btree ("review_requested_at");

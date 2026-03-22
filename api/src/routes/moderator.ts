@@ -33,21 +33,23 @@ function parseGenders(value: string | string[] | undefined): AdminUserListFilter
 }
 
 export const moderatorRouter = new Elysia({ prefix: '/moderator', tags: ['moderator'] })
-  .use(verifyXAuthHeaderMiddleware)
-  .post(
-    '/seed',
-    async ({ xAuthId, body }) => {
-      const result = await moderatorController.moderatorSeed(xAuthId, body);
-      return result;
-    },
-    {
-      headers: t.Object({
-        'x-auth-id': t.String(),
-      }),
-      body: t.Object({
-        email: t.String({ format: 'email' }),
-      }),
-    }
+  // x-auth-id is only for the seed endpoint; session routes use cookie + moderatorMiddleware.
+  .guard({}, (app) =>
+    app.use(verifyXAuthHeaderMiddleware).post(
+      '/seed',
+      async ({ xAuthId, body }) => {
+        const result = await moderatorController.moderatorSeed(xAuthId, body);
+        return result;
+      },
+      {
+        headers: t.Object({
+          'x-auth-id': t.String(),
+        }),
+        body: t.Object({
+          email: t.String({ format: 'email' }),
+        }),
+      }
+    )
   )
   .use(cookie())
   .use(moderatorMiddleware)

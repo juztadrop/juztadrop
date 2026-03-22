@@ -56,10 +56,24 @@ export async function proxyBackend(
 
   const json = await parseJson(res);
   if (!res.ok) {
-    return NextResponse.json(
-      { error: getApiErrorMessage(json, errorFallback) },
-      { status: res.status }
-    );
+    const extracted = getApiErrorMessage(json, errorFallback);
+    if (extracted === errorFallback) {
+      console.error('[proxyBackend] Backend error (using fallback message)', {
+        method,
+        path,
+        status: res.status,
+        body: json,
+      });
+    } else {
+      console.error('[proxyBackend] Backend error', {
+        method,
+        path,
+        status: res.status,
+        message: extracted,
+        body: json,
+      });
+    }
+    return NextResponse.json({ error: extracted }, { status: res.status });
   }
   const data = transformSuccess
     ? transformSuccess(json)

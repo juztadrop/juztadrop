@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { Building2, ChevronLeft, Pencil, Briefcase } from 'lucide-react';
+import { Building2, ChevronLeft, Pencil, Briefcase, Send } from 'lucide-react';
+import { toast } from 'sonner';
 import { useNgo } from '@/contexts/NgoContext';
 import { useAuth } from '@/lib/auth/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,11 +13,32 @@ import { getOrgVerificationStatusClass } from '@/lib/status';
 export default function OrganisationDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const [requestingReview, setRequestingReview] = useState(false);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { organizations, isLoading: orgsLoading } = useNgo();
+  const { organizations, isLoading: orgsLoading, refetchOrgs } = useNgo();
 
   const orgId = params.id;
   const org = organizations.find((o) => o.id === orgId);
+
+  async function handleRequestReview() {
+    if (!orgId || requestingReview) return;
+    setRequestingReview(true);
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/request-review`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data?.error ?? 'Failed to request review');
+        return;
+      }
+      await refetchOrgs();
+      toast.success('Review requested. Our team will look at your changes.');
+    } finally {
+      setRequestingReview(false);
+    }
+  }
 
   if (authLoading || orgsLoading) {
     return (
@@ -71,6 +94,17 @@ export default function OrganisationDetailPage() {
               <Pencil className="h-4 w-4" aria-hidden />
               Edit organisation
             </Link>
+            {org.verificationStatus === 'pending' && (
+              <button
+                type="button"
+                onClick={handleRequestReview}
+                disabled={requestingReview}
+                className="inline-flex items-center gap-2 rounded-xl border border-jad-primary/50 bg-jad-mint/30 px-4 py-2.5 text-sm font-medium text-jad-foreground hover:bg-jad-mint/50 disabled:opacity-50"
+              >
+                <Send className="h-4 w-4" aria-hidden />
+                {requestingReview ? 'Requesting…' : 'Request review again'}
+              </button>
+            )}
             <Link
               href={`/organisations/${orgId}/opportunities`}
               className="inline-flex items-center gap-2 rounded-xl bg-jad-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-jad-primary/25 hover:bg-jad-dark"
