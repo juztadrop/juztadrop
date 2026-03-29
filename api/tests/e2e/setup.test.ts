@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll } from 'bun:test';
 import postgres from 'postgres';
+import { unwrapSuccessEnvelope } from '../helpers/test-helpers';
 
 /**
  * Setup and Configuration Tests
- * 
+ *
  * These tests verify that the environment is properly configured
  * before running E2E tests.
  */
@@ -57,19 +58,19 @@ describe('Test Environment Setup', () => {
     it('should have required tables', async () => {
       const connectionString = getConnectionString();
       const client = postgres(connectionString, { max: 1 });
-      
+
       const tables = await client`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_name IN ('users', 'otp_tokens', 'sessions')
       `;
-      
+
       const tableNames = tables.map((t: any) => t.table_name);
       expect(tableNames).toContain('users');
       expect(tableNames).toContain('otp_tokens');
       expect(tableNames).toContain('sessions');
-      
+
       await client.end();
     });
 
@@ -124,8 +125,7 @@ describe('Test Environment Setup', () => {
         expect(response.ok).toBe(true);
       } catch (error) {
         throw new Error(
-          `API server is not running at ${API_URL}. ` +
-          `Please start it with: bun run dev`
+          `API server is not running at ${API_URL}. ` + `Please start it with: bun run dev`
         );
       }
     });
@@ -133,7 +133,8 @@ describe('Test Environment Setup', () => {
     it('should respond to health check endpoint', async () => {
       const response = await fetch(`${API_URL}/health`);
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const raw = await response.json();
+      const data = unwrapSuccessEnvelope(raw);
       expect(data).toHaveProperty('status');
     });
   });

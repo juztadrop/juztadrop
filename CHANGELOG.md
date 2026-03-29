@@ -1,3 +1,13 @@
+# [0.0.30](https://github.com/juztadrop/juztadrop/compare/v0.0.29...v0.0.30) (2026-03-22)
+
+### Changes
+
+* feat: admin UI approval workflow (#97) (e2d27cf)
+* chore: update CHANGELOG for v0.0.29 [skip ci] (1067a19)
+* feat(api): organization verification workflow & org listing api for moderator and user (#96) (8b9b4cf)
+
+---
+
 # [0.0.29](https://github.com/juztadrop/juztadrop/compare/v0.0.29...v0.0.29) (2026-03-13)
 
 ### Changes

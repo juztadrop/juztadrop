@@ -131,3 +131,33 @@ export async function organizationPatch(
     'Organization PATCH'
   );
 }
+
+export async function organizationRequestReview(id: string): Promise<NextResponse> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('sessionToken')?.value;
+  if (!token) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return withServerError(
+    async () => {
+      const res = await fetch(
+        `${getBackendUrl()}/organizations/${encodeURIComponent(id)}/request-review`,
+        {
+          method: 'POST',
+          headers: { Cookie: `sessionToken=${token}` },
+          cache: 'no-store',
+        }
+      );
+      const json = await parseJsonRes(res);
+      if (!res.ok) {
+        return NextResponse.json(
+          { error: getApiErrorMessage(json, 'Failed to request review') },
+          { status: res.status }
+        );
+      }
+      return NextResponse.json(json?.data ?? json);
+    },
+    'Failed to request review',
+    'Organization request-review'
+  );
+}

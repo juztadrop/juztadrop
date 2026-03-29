@@ -1,5 +1,7 @@
 export const MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1 MB
-export const BUCKET_NAME = 'assets';
+
+/** Supabase Storage bucket id (Dashboard → Storage). Set SUPABASE_STORAGE_BUCKET if not using the default. */
+export const BUCKET_NAME = process.env.SUPABASE_STORAGE_BUCKET?.trim() || 'assets';
 
 export const FILE_CLASSES = {
   avatars: {

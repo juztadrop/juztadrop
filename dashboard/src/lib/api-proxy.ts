@@ -10,6 +10,27 @@ export function getBackendUrl(): string {
   return API_URL;
 }
 
+/**
+ * Extract a user-facing error message from an API response body.
+ * Backend returns { success: false, error: { message, code?, details? } }.
+ */
+export function getApiErrorMessage(data: unknown, fallback: string): string {
+  if (data == null || typeof data !== 'object') return fallback;
+  const obj = data as Record<string, unknown>;
+  const err = obj.error;
+  if (typeof err === 'string') return err;
+  if (
+    err &&
+    typeof err === 'object' &&
+    'message' in err &&
+    typeof (err as Record<string, unknown>).message === 'string'
+  ) {
+    return (err as Record<string, unknown>).message as string;
+  }
+  if (typeof obj.message === 'string') return obj.message;
+  return fallback;
+}
+
 export function getBackendErrorHint(error: unknown): string {
   const err = error instanceof Error ? error : new Error(String(error));
   const cause = err.cause instanceof Error ? err.cause : null;
