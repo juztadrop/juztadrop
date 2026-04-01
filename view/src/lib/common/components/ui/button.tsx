@@ -10,20 +10,30 @@ const buttonVariants = cva(
         default: 'bg-jad-primary text-primary-foreground hover:bg-jad-dark',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        secondary: 'bg-secondary text-jad-primary hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        jad: 'bg-jad-green text-white hover:bg-jad-green/90 shadow-lg shadow-jad-teal/20',
+        jad: 'bg-jad-accent text-white hover:bg-jad-primary/90 shadow-lg shadow-jad-primary/20',
         'jad-glow':
           'bg-jad-green text-white hover:bg-jad-green/90 shadow-lg shadow-jad-teal/20 ring-2 ring-jad-teal-light/60 ring-offset-2 ring-offset-jad-teal-dark',
         'jad-mint':
           'bg-jad-mint text-jad-foreground border-2 border-jad-accent hover:bg-jad-mint/90 hover:border-jad-primary',
       },
       size: {
-        default: 'h-10 px-4 py-2 rounded-xl  text-base',
-        sm: 'h-9 rounded-xl px-3  text-sm',
-        lg: 'h-11 rounded-xl px-8  text-lg',
+        default: 'h-10 px-4 py-2 rounded-xl text-base',
+        sm: 'h-9 rounded-xl px-3 text-sm',
+        lg: 'h-11 rounded-xl px-8 text-lg',
         icon: 'h-10 w-10',
+      },
+      rounded: {
+        none: 'rounded-none',
+        sm: 'rounded-sm',
+        md: 'rounded-md',
+        lg: 'rounded-lg',
+        xl: 'rounded-xl',
+        '2xl': 'rounded-2xl',
+        '3xl': 'rounded-3xl',
+        full: 'rounded-full',
       },
     },
     defaultVariants: {
@@ -37,12 +47,17 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, rounded, ...props }, ref) => {
     return (
-      <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <button
+        className={cn(buttonVariants({ variant, size, rounded, className }))}
+        ref={ref}
+        {...props}
+      />
     );
   }
 );
+
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };
