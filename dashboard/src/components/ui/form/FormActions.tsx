@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/common';
+import { TextMorph } from 'torph/react';
 
 export interface FormActionsProps {
   submitLabel: string;
@@ -59,14 +60,10 @@ export function FormActions({
           secondaryLabel ? 'sm:order-2' : 'w-full sm:w-auto'
         )}
       >
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          submitLabel
-        )}
+        <>
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+          <TextMorph>{loading ? 'Saving' : submitLabel}</TextMorph>
+        </>
       </button>
     </div>
   );

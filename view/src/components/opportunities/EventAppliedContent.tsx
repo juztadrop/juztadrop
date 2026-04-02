@@ -1,27 +1,43 @@
+'use client';
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui';
+import { DUMMY_VOLUNTEERS } from '@/components/opportunities/OpportunityDetailContent';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.05,
-    },
-  },
-};
+const AVATAR_COLORS = [
+  'bg-jad-mint text-jad-primary',
+  'bg-amber-100 text-amber-700',
+  'bg-sky-100 text-sky-700',
+  'bg-rose-100 text-rose-700',
+  'bg-violet-100 text-violet-700',
+];
+
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function getInitials(name: string | null, email: string): string {
+  if (name?.trim()) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }
+  return email ? email.slice(0, 2).toUpperCase() : '';
+}
 
 const fadeUpVariants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 24,
+      type: 'tween',
+      ease: [0.25, 0.1, 0.25, 1],
+      duration: 0.28,
     },
   },
 };
@@ -31,54 +47,72 @@ const avatarContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.07,
-      delayChildren: 0.08,
+      staggerChildren: 0.06,
+      delayChildren: 0.18,
     },
   },
 };
 
 const avatarVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0 },
+  hidden: { opacity: 0, y: 20, scale: 0.6 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
       type: 'spring',
-      stiffness: 500,
-      damping: 18,
-      mass: 0.6,
+      stiffness: 520,
+      damping: 14,
+      mass: 0.5,
+    },
+  },
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.08,
     },
   },
 };
 
 type Props = {
-  setStage: () => void;
+  setStage: (stage: string) => void;
+  eventName: string;
 };
 
 const EventAppliedContent: React.FC<Props> = (props: Props) => {
+  const previewVolunteers = DUMMY_VOLUNTEERS.slice(0, 5);
+
   return (
     <motion.div
-      className="w-[450px] h-[350px] bg-jad-primary rounded-xl text-white text-center flex items-center justify-center flex-col gap-7"
-      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+      className="fixed inset-0 sm:static sm:inset-auto w-full sm:w-[450px] sm:h-[350px] h-full bg-jad-primary sm:rounded-xl text-white text-center flex items-center justify-center flex-col gap-7 px-6"
+      initial={{ opacity: 0, scale: 0.92, y: 14 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{
-        type: 'spring',
-        stiffness: 480,
-        damping: 22,
-        mass: 0.7,
+        type: 'tween',
+        ease: [0.25, 0.1, 0.25, 1],
+        duration: 0.25,
       }}
     >
       <motion.div
         className="flex flex-col gap-5 items-center"
-        variants={fadeUpVariants}
+        variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="text-2xl text-white font-semibold">Event Joined!</div>
-        <div className="text-md text-white opacity-[0.5] font-normal">
-          Join the discussion for Feed the pups day
-        </div>
+        <motion.div className="text-2xl text-white font-semibold" variants={fadeUpVariants}>
+          Event Joined!
+        </motion.div>
+        <motion.div
+          className="text-md text-white opacity-[0.5] font-normal"
+          variants={fadeUpVariants}
+        >
+          Join the discussion for {props.eventName}
+        </motion.div>
       </motion.div>
 
       <motion.div
@@ -87,30 +121,42 @@ const EventAppliedContent: React.FC<Props> = (props: Props) => {
         initial="hidden"
         animate="visible"
       >
-        {[0, 1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            className="w-[65px] h-[65px] border-white border-[5px] shadow-md rounded-full bg-jad-dark ml-[-15px]"
-            variants={avatarVariants}
-          />
-        ))}
+        {previewVolunteers.map((v) => {
+          const initials = getInitials(v.name, v.email);
+          const colorClass = AVATAR_COLORS[hashCode(v.id) % AVATAR_COLORS.length];
+          return (
+            <motion.div
+              key={v.id}
+              className={`w-[55px] h-[55px] border-white border-[4px] shadow-md rounded-full ml-[-14px] flex items-center justify-center text-sm font-bold ${colorClass}`}
+              variants={avatarVariants}
+            >
+              {initials}
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       <motion.div
-        className="flex flex-row justify-around gap-4"
-        variants={fadeUpVariants}
-        initial="hidden"
-        animate="visible"
+        className="flex flex-row justify-around gap-4 w-full sm:w-auto"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          type: 'tween',
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.28,
+          delay: 0.32,
+        }}
       >
         <Button
           size={'default'}
           variant="secondary"
           rounded="3xl"
+          className="flex-1 sm:flex-none"
           onClick={() => props.setStage('')}
         >
           Back to event
         </Button>
-        <Button size={'default'} variant="default" rounded="3xl">
+        <Button size={'default'} variant="default" rounded="3xl" className="flex-1 sm:flex-none">
           View Participants
         </Button>
       </motion.div>

@@ -1,42 +1,116 @@
+'use client';
 import { Calendar, Clock, Mail, Phone, User, Award, DollarSign } from 'lucide-react';
 import { LocationMapPreview } from '@/components/map/LocationMapPreview';
 import { VerifiedBadge } from '@/components/common/VerifiedBadge';
 import { formatDateRange } from '@/lib/date';
 import type { OpportunityDetailOpportunity } from '@/hooks/useOpportunityDetail';
 import FloatingApplyButton from './FloatingApplyButton';
+import { VolunteerCard, VolunteerCardData } from '@/components/volunteers/VolunteerCard';
 
 export interface OpportunityDetailContentProps {
   opportunity: OpportunityDetailOpportunity;
   addressStr: string;
 }
 
+export const DUMMY_VOLUNTEERS: VolunteerCardData[] = [
+  {
+    id: '1',
+    name: 'Aarav Sharma',
+    email: 'aarav@example.com',
+    causes: ['education'],
+    skills: [{ name: 'Teaching', expertise: 'intermediate' }],
+  },
+  {
+    id: '2',
+    name: 'Priya Nair',
+    email: 'priya@example.com',
+    causes: ['environment'],
+    skills: [{ name: 'Research', expertise: 'advanced' }],
+  },
+  {
+    id: '3',
+    name: 'Rohan Mehta',
+    email: 'rohan@example.com',
+    causes: ['health'],
+    skills: [{ name: 'First Aid', expertise: 'beginner' }],
+  },
+  {
+    id: '4',
+    name: 'Sneha Patel',
+    email: 'sneha@example.com',
+    causes: ['women_empowerment'],
+    skills: [{ name: 'Counseling', expertise: 'intermediate' }],
+  },
+  {
+    id: '5',
+    name: 'Karan Verma',
+    email: 'karan@example.com',
+    causes: ['education'],
+    skills: [{ name: 'Coding', expertise: 'advanced' }],
+  },
+  {
+    id: '6',
+    name: 'Divya Iyer',
+    email: 'divya@example.com',
+    causes: ['animal_welfare'],
+    skills: [{ name: 'Veterinary', expertise: 'intermediate' }],
+  },
+  {
+    id: '7',
+    name: 'Amit Joshi',
+    email: 'amit@example.com',
+    causes: ['environment'],
+    skills: [{ name: 'Gardening', expertise: 'beginner' }],
+  },
+  {
+    id: '8',
+    name: 'Meera Pillai',
+    email: 'meera@example.com',
+    causes: ['health'],
+    skills: [{ name: 'Nutrition', expertise: 'advanced' }],
+  },
+];
+
+function getInitials(name: string | null, email: string): string {
+  if (name?.trim()) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }
+  return email ? email.slice(0, 2).toUpperCase() : '';
+}
+
 export function OpportunityDetailContent({
   opportunity,
   addressStr,
 }: OpportunityDetailContentProps) {
+  const volunteers = DUMMY_VOLUNTEERS;
+
   return (
-    <div className="space-y-8 max-w-[800px] w-full m-auto">
-      <FloatingApplyButton />
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
-          {opportunity.title}
-        </h1>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-lg font-medium text-jad-primary">{opportunity.orgName}</span>
-          {opportunity.orgVerificationStatus === 'verified' && <VerifiedBadge />}
-        </div>
-        {(opportunity.causeCategoryNames?.length ?? 0) > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {(opportunity.causeCategoryNames ?? []).map((c) => (
-              <span
-                key={c}
-                className="rounded-full bg-jad-mint/50 px-2.5 py-0.5 text-xs font-medium text-jad-foreground"
-              >
-                {c.replace(/_/g, ' ')}
-              </span>
-            ))}
+    <div className="space-y-8 max-w-[630px] w-full m-auto">
+      <FloatingApplyButton eventName={opportunity.title} />
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
+            {opportunity.title}
+          </h1>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-lg font-medium text-jad-primary">{opportunity.orgName}</span>
+            {opportunity.orgVerificationStatus === 'verified' && <VerifiedBadge />}
           </div>
-        )}
+          {(opportunity.causeCategoryNames?.length ?? 0) > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(opportunity.causeCategoryNames ?? []).map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-jad-mint/50 px-2.5 py-0.5 text-xs font-medium text-jad-foreground"
+                >
+                  {c.replace(/_/g, ' ')}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div>
@@ -97,6 +171,15 @@ export function OpportunityDetailContent({
       )}
 
       <div>
+        <h2 className="mb-2 text-lg font-semibold text-jad-foreground">People Joined</h2>
+        <div className="grid grid-cols-4 gap-2">
+          {volunteers.map((volunteer) => (
+            <VolunteerCard key={volunteer.id} volunteer={volunteer} />
+          ))}
+        </div>
+      </div>
+
+      <div>
         <h2 className="mb-2 text-lg font-semibold text-jad-foreground">Date & time</h2>
         <div className="flex flex-wrap gap-4 text-foreground/80">
           <span className="flex items-center gap-2">
@@ -124,6 +207,7 @@ export function OpportunityDetailContent({
             latitude={opportunity.latitude}
             longitude={opportunity.longitude}
             address={addressStr || undefined}
+            className="bg-white"
             height={240}
           />
         </div>

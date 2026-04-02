@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/common';
+import { TextMorph } from 'torph/react';
 
 export interface FormActionsProps {
   submitLabel: string;
@@ -34,8 +35,8 @@ export function FormActions({
         className
       )}
     >
-      {secondaryLabel && (
-        secondaryHref ? (
+      {secondaryLabel &&
+        (secondaryHref ? (
           <Link
             href={secondaryHref}
             className="order-2 sm:order-1 text-center text-sm font-medium text-foreground/70 hover:text-jad-primary transition-colors"
@@ -50,8 +51,7 @@ export function FormActions({
           >
             {secondaryLabel}
           </button>
-        )
-      )}
+        ))}
       <button
         type="submit"
         disabled={disabled || loading}
@@ -60,14 +60,8 @@ export function FormActions({
           secondaryLabel ? 'sm:order-2' : 'w-full sm:w-auto'
         )}
       >
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          submitLabel
-        )}
+        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+        <TextMorph>{loading ? 'Saving' : submitLabel}</TextMorph>
       </button>
     </div>
   );

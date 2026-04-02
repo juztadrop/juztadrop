@@ -37,7 +37,8 @@ export function LocationMapPreview({
 }: LocationMapPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const hasCoords = latitude != null && longitude != null && !Number.isNaN(latitude) && !Number.isNaN(longitude);
+  const hasCoords =
+    latitude != null && longitude != null && !Number.isNaN(latitude) && !Number.isNaN(longitude);
 
   useEffect(() => {
     if (!hasCoords || !containerRef.current) return;
@@ -102,11 +103,7 @@ export function LocationMapPreview({
 
   return (
     <div className={cn('overflow-hidden rounded-xl border border-foreground/10', className)}>
-      <div
-        ref={containerRef}
-        className="relative w-full"
-        style={{ height: heightStyle }}
-      />
+      <div ref={containerRef} className="relative w-full" style={{ height: heightStyle }} />
       {address && (
         <div className="border-t border-foreground/10 bg-muted/20 px-4 py-2">
           <p className="flex items-center gap-2 text-sm text-foreground">

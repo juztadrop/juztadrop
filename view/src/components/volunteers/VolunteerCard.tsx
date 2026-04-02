@@ -79,7 +79,7 @@ export function VolunteerCard({
       <div className="flex flex-col items-center gap-3">
         <div
           className={cn(
-            'flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold shadow-md bg-white border-white border-solid border-8 cursor-pointer',
+            'flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold shadow-sm bg-white border-white border-solid border-8 cursor-pointer',
             colorClass
           )}
         >
