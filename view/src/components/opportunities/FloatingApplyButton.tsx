@@ -34,7 +34,7 @@ const FloatingApplyButton: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={`fixed bottom-${stage === 'EVENT_APPLIED' ? '0' : '[30px]'} sm:bottom-[30px] left-1/2 -translate-x-1/2 z-[1000] w-full sm:w-auto px-4 sm:px-0`}
+      className={`fixed bottom-${stage === 'EVENT_APPLIED' ? '0' : '[30px]'} sm:bottom-[30px] left-1/2 -translate-x-1/2 z-[1] w-full sm:w-auto px-4 sm:px-0`}
       style={
         isMobile && stage === 'EVENT_APPLIED' ? { height: '-webkit-fill-available' } : undefined
       }

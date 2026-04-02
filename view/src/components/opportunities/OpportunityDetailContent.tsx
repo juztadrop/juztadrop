@@ -171,7 +171,9 @@ export function OpportunityDetailContent({
       )}
 
       <div>
-        <h2 className="mb-2 text-lg font-semibold text-jad-foreground">People Joined</h2>
+        <h2 className="mb-2 text-lg font-semibold text-jad-foreground">
+          {DUMMY_VOLUNTEERS.length} People Joined
+        </h2>
         <div className="grid grid-cols-4 gap-2">
           {volunteers.map((volunteer) => (
             <VolunteerCard key={volunteer.id} volunteer={volunteer} />
