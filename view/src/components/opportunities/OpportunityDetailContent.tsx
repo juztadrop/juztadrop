@@ -6,6 +6,7 @@ import { formatDateRange } from '@/lib/date';
 import type { OpportunityDetailOpportunity } from '@/hooks/useOpportunityDetail';
 import FloatingApplyButton from './FloatingApplyButton';
 import { VolunteerCard, VolunteerCardData } from '@/components/volunteers/VolunteerCard';
+import { useState } from 'react';
 
 export interface OpportunityDetailContentProps {
   opportunity: OpportunityDetailOpportunity;
@@ -86,9 +87,15 @@ export function OpportunityDetailContent({
 }: OpportunityDetailContentProps) {
   const volunteers = DUMMY_VOLUNTEERS;
 
+  const [opportunityApplied, setOpportunityApplied] = useState(false);
+
   return (
     <div className="space-y-8 max-w-[630px] w-full m-auto">
-      <FloatingApplyButton eventName={opportunity.title} />
+      <FloatingApplyButton
+        eventName={opportunity.title}
+        setOpportunityApplied={setOpportunityApplied}
+        opportunityApplied={opportunityApplied}
+      />
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-3">
           <h1 className="text-2xl font-bold tracking-tight text-jad-foreground sm:text-3xl">
